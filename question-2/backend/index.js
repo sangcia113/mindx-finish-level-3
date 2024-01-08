@@ -1,31 +1,24 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-
-const inventoryRoutes = require('./src/routes/inventoryRoutes');
-// const orderRoutes = require('./src/routes/orderRoutes');
-const userRoutes = require('./src/routes/userRoutes');
+const connectToDB = require('./src/database');
+const importData = require('./src/utils/importMockData');
+const router = require('./src/routes');
 
 const app = express();
-const port = 3000;
 
-mongoose.connect('mongodb://localhost:27017/inventory', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
+app.use(express.json());
 
-const db = mongoose.connection;
-db.on('error', err => console.error('MongoDB connection error:', err));
-db.once('open', () => {
-    console.log('Connected to MongoDB');
+connectToDB()
+    .then(async () => {
+        await importData();
 
-    app.use(bodyParser.json());
+        const PORT = 3000;
 
-    app.use('/api/inventory', inventoryRoutes);
-    // app.use('/api/orders', orderRoutes);
-    app.use('/api/users', userRoutes);
+        app.use('/api', router);
 
-    app.listen(port, () => {
-        console.log(`Server is running on port ${port}`);
+        app.listen(PORT, () => {
+            console.log(`Server is listening on PORT ${PORT}`);
+        });
+    })
+    .catch(error => {
+        console.error('Failed to connect to database:', error);
     });
-});

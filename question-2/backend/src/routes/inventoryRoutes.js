@@ -1,7 +1,8 @@
-const express = require('express');
-const router = express.Router();
-const inventoryController = require('../controllers/inventoryController');
+const router = require('express').Router();
 
-router.get('/products', inventoryController.getAllProducts);
+const { getAllProducts, getLowQuantityProducts } = require('../controllers/inventoryController');
+
+router.get('/products', getAllProducts);
+router.get('/low-quantity-products', getLowQuantityProducts);
 
 module.exports = router;
