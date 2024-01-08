@@ -1,13 +1,25 @@
-const Inventory = require('../models/inventory');
+const Order = require('../models/orderModel');
 
-const getAllProducts = async lowQuantity => {
-    let query = {};
-    if (lowQuantity) {
-        query = { instock: { $lt: 100 } };
-    }
+const orderService = {
+    getAll: async () => {
+        try {
+            const orders = await Order.find();
 
-    const products = await Inventory.find(query);
-    return products;
+            return orders;
+        } catch (error) {
+            return { error: error.message };
+        }
+    },
+
+    getLimit: async id => {
+        try {
+            const orders = await Order.findById(id);
+
+            return orders;
+        } catch (error) {
+            return { error: error.message };
+        }
+    },
 };
 
-module.exports = { getAllProducts };
+module.exports = orderService;

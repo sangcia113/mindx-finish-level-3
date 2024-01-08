@@ -1,11 +1,11 @@
 const router = require('express').Router();
 
-const authRoutes = require('../routes/authRoutes');
-const inventoryRoutes = require('../routes/inventoryRoutes');
-const orderRoutes = require('../routes/orderRoutes');
+const authRoute = require('../routes/authRoute');
+const inventoryRoute = require('../routes/inventoryRoute');
+const orderRoute = require('../routes/orderRoute');
 
-router.use('/login', authRoutes);
-router.use('/inventory', inventoryRoutes);
-router.use('/order', orderRoutes);
+router.use('/login', authRoute);
+router.use('/inventory', inventoryRoute);
+router.use('/order', orderRoute);
 
 module.exports = router;

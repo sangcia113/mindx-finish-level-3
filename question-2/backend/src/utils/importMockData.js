@@ -1,7 +1,9 @@
+// Import data to mongoDB. (1 Point)
+
 const Order = require('../models/orderModel');
 const Inventory = require('../models/inventoryModel');
 const User = require('../models/userModel');
-const encodePassword = require('./handleEncodePassword');
+const encodePassword = require('./encodePassword');
 
 const ordersData = [
     { _id: 1, item: 'almonds', price: 12, quantity: 2 },
@@ -23,12 +25,10 @@ const usersData = [
 
 const importData = async () => {
     try {
-        // Remove existing data
         await Order.deleteMany({});
         await Inventory.deleteMany({});
         await User.deleteMany({});
 
-        // Insert new data
         await Order.insertMany(ordersData);
         await Inventory.insertMany(inventoryData);
         await User.insertMany(usersData);
