@@ -9,13 +9,13 @@ const getAllProducts = async (req, res) => {
     }
 };
 
-const getLowQuantityProducts = async (req, res) => {
+const getLimitProducts = async (req, res) => {
     try {
-        const lowQuantityProducts = await Inventory.find({ instock: { $lt: 100 } });
-        res.json(lowQuantityProducts);
+        const limitProducts = await Inventory.find({ instock: { $lt: 100 } });
+        res.json(limitProducts);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
-module.exports = { getAllProducts, getLowQuantityProducts };
+module.exports = { getAllProducts, getLimitProducts };
