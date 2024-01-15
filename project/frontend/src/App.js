@@ -1,16 +1,17 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { ConfigProvider } from 'antd';
-// import {
-//     HistoryPage,
-//     HomePage,
-//     LeaderPage,
-//     LoginPage,
-//     ManagerPage,
-//     NotExistedPage,
-//     PrivatePage,
-//     UserPage,
-// } from './pages/index';
+import { ConfigProvider, Layout } from 'antd';
+import {
+    // HistoryPage,
+    HomePage,
+    // LeaderPage,
+    // LoginPage,
+    // ManagerPage,
+    // NotExistedPage,
+    // PrivatePage,
+    // UserPage,
+} from './pages/index';
+import { FooterComponent, HeaderComponent } from './components';
 
 const App = () => {
     console.log('App run.....');
@@ -29,16 +30,20 @@ const App = () => {
             >
                 <Routes>
                     {/* <Route path="*" element={<NotExistedPage />} />
-                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/login" element={<LoginPage />} /> */}
                     <Route
                         path="/"
                         element={
-                            <PrivatePage roles={[1, 2, 3, 4, 5, 6]}>
+                            // <PrivatePage roles={[1, 2, 3, 4, 5, 6]}>
+                            <Layout style={{ minHeight: '100vh' }}>
+                                <HeaderComponent />
                                 <HomePage />
-                            </PrivatePage>
+                                <FooterComponent />
+                            </Layout>
+                            // </PrivatePage>
                         }
                     />
-                    <Route
+                    {/* <Route
                         path="/history"
                         element={
                             <PrivatePage roles={[1, 2, 3, 4, 5, 6]}>

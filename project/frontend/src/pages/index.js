@@ -4,7 +4,8 @@ import DishPage from './dish/DishPage';
 import DishTypePage from './dish/DishTypePage';
 import HomePage from './HomePage';
 import MenuPage from './MenuPage';
-import NotFoundPage from './NotFoundPage';
+import NotAuthorizedPage from './NotAuthorizedPage';
+import NotExistedPage from './NotExistedPage';
 import IngredientPage from './ingredient/IngredientPage';
 import IngredientTypePage from './ingredient/IngredientTypePage';
 import RolePage from './others/RolePage';
@@ -22,7 +23,8 @@ export {
     DishTypePage,
     HomePage,
     MenuPage,
-    NotFoundPage,
+    NotAuthorizedPage,
+    NotExistedPage,
     IngredientPage,
     IngredientTypePage,
     RolePage,
