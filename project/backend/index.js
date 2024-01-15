@@ -10,7 +10,7 @@ const cors = require('cors');
 // Import router chính từ file routes/index.js
 const router = require('./src/routes/index');
 
-const connectToDB = require('./src/database');
+const connectToDB = require('./src/databases');
 
 // Khởi tạo ứng dụng Express
 const app = express();

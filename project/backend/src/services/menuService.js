@@ -1,4 +1,4 @@
-const db = require('../config/databaseConfig');
+const db = require('../configs/databaseConfig');
 
 const createMenuDetail = async (id, menuDetail) => {
     // Tạo một mảng chứa các giá trị để chèn vào bảng 'menu_detail'

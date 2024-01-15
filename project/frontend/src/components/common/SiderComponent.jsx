@@ -123,7 +123,7 @@ const SiderComponent = ({ defaultSelectedKeys, defaultOpenKeys }) => {
         <Sider breakpoint="xxl" collapsible collapsedWidth="0" theme="light" width="220">
             <Link to="/">
                 <Image
-                    src={require('../assets/logo/logoWFC.png')}
+                    src={require('../../assets/logo/header.png')}
                     width="210px"
                     preview={false}
                     alt="Logo WineFood"

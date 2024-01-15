@@ -1,13 +1,18 @@
-import CardComponent from './CardComponent';
-import ContentComponent from './ContentComponent';
-import DropdownComponent from './DropdownComponent';
-import FooterComponent from './FooterComponent';
-import FormComponent from './FormComponent';
-import HeaderComponent from './HeaderComponent';
-import ModalComponent from './modal/ModalComponent';
-import { modalInfo, modalSuccess, modalError, modalWarning } from './modal/ModalNoticeComponent';
-import SiderComponent from './SiderComponent';
-import TableComponent from './TableComponent';
+import CardComponent from './feature/CardComponent';
+import ContentComponent from './common/ContentComponent';
+import DropdownComponent from './feature/DropdownComponent';
+import FooterComponent from './common/FooterComponent';
+import FormComponent from './feature/FormComponent';
+import HeaderComponent from './common/HeaderComponent';
+import ModalComponent from './feature/modal/ModalComponent';
+import {
+    modalInfo,
+    modalSuccess,
+    modalError,
+    modalWarning,
+} from './feature/modal/ModalNoticeComponent';
+import SiderComponent from './common/SiderComponent';
+import TableComponent from './feature/TableComponent';
 
 export {
     CardComponent,

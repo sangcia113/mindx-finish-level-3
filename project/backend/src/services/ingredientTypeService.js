@@ -1,4 +1,4 @@
-const db = require('../config/databaseConfig');
+const db = require('../configs/databaseConfig');
 
 const createIngredientType = async name => {
     // Câu lệnh SQL để chèn dữ liệu vào bảng

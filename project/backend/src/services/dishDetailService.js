@@ -1,4 +1,4 @@
-const db = require('../config/databaseConfig');
+const db = require('../configs/databaseConfig');
 
 const readDishDetail = async id => {
     // Câu lệnh SQL để truy vấn dữ liệu từ bảng

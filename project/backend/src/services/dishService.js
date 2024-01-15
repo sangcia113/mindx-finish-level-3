@@ -1,4 +1,4 @@
-const db = require('../config/databaseConfig');
+const db = require('../configs/databaseConfig');
 
 const createDishDetail = async (id, dishDetail) => {
     // Tạo một mảng chứa các giá trị để chèn vào bảng 'dish_detail'

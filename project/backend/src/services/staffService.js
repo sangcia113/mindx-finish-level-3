@@ -1,4 +1,4 @@
-const db = require('../config/databaseConfig');
+const db = require('../configs/databaseConfig');
 
 const createStaff = async (
     code,

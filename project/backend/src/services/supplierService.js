@@ -1,4 +1,4 @@
-const db = require('../config/databaseConfig');
+const db = require('../configs/databaseConfig');
 
 const createSupplier = async (name, numberPhone, address) => {
     // Câu lệnh SQL để chèn dữ liệu vào bảng

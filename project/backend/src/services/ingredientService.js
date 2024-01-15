@@ -1,4 +1,4 @@
-const db = require('../config/databaseConfig');
+const db = require('../configs/databaseConfig');
 
 const createIngredient = async (name, ingredientTypeId, unitId, minStock) => {
     // Câu lệnh SQL để chèn dữ liệu vào bảng
