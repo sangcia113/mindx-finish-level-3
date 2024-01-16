@@ -1,38 +1,27 @@
-const db = require('../configs/databaseConfig');
+const Role = require('../models/roleModel');
 
-const createRole = async name => {
-    // Câu lệnh SQL để chèn dữ liệu vào bảng
-    const sql = `INSERT INTO role (name, createdDate) VALUES (?, ?)`;
+const roleService = {
+    createRole: async roleData => {
+        const role = new Role(roleData);
 
-    // Thực hiện câu lệnh SQL
-    await db.query(sql, [name, new Date()]);
+        return await role.save();
+    },
+
+    readAllRole: async () => {
+        return await Role.find();
+    },
+
+    readRoleById: async id => {
+        return await Role.findById(id);
+    },
+
+    updateRole: async (id, roleData) => {
+        return await Role.findByIdAndUpdate(id, roleData, { new: true });
+    },
+
+    deleteRole: async id => {
+        return await Role.findByIdAndDelete(id);
+    },
 };
 
-const readRole = async () => {
-    // Câu lệnh SQL để truy vấn dữ liệu từ bảng
-    const sql = `SELECT * FROM role ORDER BY id DESC`;
-
-    // Thực hiện truy vấn SQL và lưu kết quả vào biến 'results'
-    const [results] = await db.query(sql);
-
-    // Trả về kết quả của truy vấn SQL
-    return results;
-};
-
-const updateRole = async (name, id) => {
-    // Câu lệnh SQL để cập nhật dữ liệu vào bảng
-    const sql = `UPDATE role SET name = ?, createdDate = ? WHERE id = ?`;
-
-    // Thực hiện câu lệnh SQL
-    await db.query(sql, [name, new Date(), id]);
-};
-
-const deleteRole = async id => {
-    // Câu lệnh SQL để xoá dữ liệu từ bảng
-    const sql = `DELETE FROM role WHERE id = ?`;
-
-    // Thực hiện câu lệnh SQL
-    await db.query(sql, [id]);
-};
-
-module.exports = { createRole, readRole, updateRole, deleteRole };
+module.exports = roleService;

@@ -7,7 +7,7 @@ import {
     // LeaderPage,
     // LoginPage,
     // ManagerPage,
-    // NotExistedPage,
+    NotExistedPage,
     // PrivatePage,
     // UserPage,
 } from './pages/index';
@@ -29,8 +29,8 @@ const App = () => {
                 }}
             >
                 <Routes>
-                    {/* <Route path="*" element={<NotExistedPage />} />
-                    <Route path="/login" element={<LoginPage />} /> */}
+                    <Route path="*" element={<NotExistedPage />} />
+                    {/* <Route path="/login" element={<LoginPage />} /> */}
                     <Route
                         path="/"
                         element={

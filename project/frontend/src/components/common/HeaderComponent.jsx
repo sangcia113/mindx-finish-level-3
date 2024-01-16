@@ -42,12 +42,12 @@ const items = [
             {
                 key: 'dish-list',
                 label: 'Danh sách',
-                icon: <CardChecklist color="royalBlue" />,
+                icon: <CardChecklist color="DodgerBlue" />,
             },
             {
                 key: 'dish-type',
                 label: 'Phân loại',
-                icon: <Basket3Fill color="royalBlue" />,
+                icon: <Basket3Fill color="DodgerBlue" />,
             },
         ],
     },
@@ -60,12 +60,12 @@ const items = [
             {
                 key: 'ingredient-list',
                 label: 'Danh sách',
-                icon: <CardChecklist color="royalBlue" />,
+                icon: <CardChecklist color="DodgerBlue" />,
             },
             {
                 key: 'ingredient-type',
                 label: 'Phân loại',
-                icon: <Basket3Fill color="royalBlue" />,
+                icon: <Basket3Fill color="DodgerBlue" />,
             },
         ],
     },
@@ -78,12 +78,12 @@ const items = [
             {
                 key: 'stock-in',
                 label: 'Nhập kho',
-                icon: <ArrowBarLeft color="#008034" />,
+                icon: <ArrowBarLeft color="DodgerBlue" />,
             },
             {
                 key: 'stock-out',
                 label: 'Xuất kho',
-                icon: <ArrowBarRight color="#008034" />,
+                icon: <ArrowBarRight color="DodgerBlue" />,
             },
         ],
     },
@@ -98,22 +98,22 @@ const items = [
             {
                 key: 'others-unit',
                 label: 'Đơn vị tính',
-                icon: <CalculatorFill color="#008034" />,
+                icon: <CalculatorFill color="DodgerBlue" />,
             },
             {
                 key: 'others-staff',
                 label: 'Nhân viên',
-                icon: <PersonVcard color="#008034" />,
+                icon: <PersonVcard color="DodgerBlue" />,
             },
             {
                 key: 'others-department',
                 label: 'Phòng ban',
-                icon: <Cast color="#008034" />,
+                icon: <Cast color="DodgerBlue" />,
             },
             {
                 key: 'others-role',
                 label: 'Chức vụ',
-                icon: <Bezier color="#008034" />,
+                icon: <Bezier color="DodgerBlue" />,
             },
         ],
     },
@@ -128,7 +128,7 @@ const HeaderComponent = ({ name }) => {
         <Header
             style={{
                 backgroundColor: 'white',
-                padding: '0 24px ',
+                padding: '0 36px 0 4px',
             }}
         >
             <Flex align="center" justify="space-between">
@@ -137,7 +137,9 @@ const HeaderComponent = ({ name }) => {
                     onClick={() => setOpenDraw(prevOpen => !prevOpen)}
                 />
                 <Link to="/">
-                    <Text style={{ fontSize: 36, fontWeight: 700 }}>MindX</Text>
+                    <Text style={{ color: 'DodgerBlue', fontSize: 36, fontWeight: 700 }}>
+                        MindX
+                    </Text>
                 </Link>
                 <Space size={'large'}>
                     <Badge count={4} overflowCount={10} size={'small'} color="OrangeRed">

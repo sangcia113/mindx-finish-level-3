@@ -1,38 +1,27 @@
-const db = require('../configs/databaseConfig');
+const Unit = require('../models/unitModel');
 
-const createUnit = async name => {
-    // Câu lệnh SQL để chèn dữ liệu vào bảng
-    const sql = `INSERT INTO unit (name, createdDate) VALUES (?, ?)`;
+const userService = {
+    createUnit: async userData => {
+        const unit = new Unit(userData);
 
-    // Thực hiện câu lệnh SQL
-    await db.query(sql, [name, new Date()]);
+        return await unit.save();
+    },
+
+    readAllUnit: async () => {
+        return await Unit.find();
+    },
+
+    readUnitById: async id => {
+        return await Unit.findById(id);
+    },
+
+    updateUnit: async (id, userData) => {
+        return await Unit.findByIdAndUpdate(id, userData, { new: true });
+    },
+
+    deleteUnit: async id => {
+        return await Unit.findByIdAndDelete(id);
+    },
 };
 
-const readUnit = async () => {
-    // Câu lệnh SQL để truy vấn dữ liệu từ bảng
-    const sql = `SELECT * FROM unit ORDER BY id DESC`;
-
-    // Thực hiện truy vấn SQL và lưu kết quả vào biến 'results'
-    const [results] = await db.query(sql);
-
-    // Trả về kết quả của truy vấn SQL
-    return results;
-};
-
-const updateUnit = async (name, id) => {
-    // Câu lệnh SQL để cập nhật dữ liệu vào bảng
-    const sql = `UPDATE unit SET name = ?, createdDate = ? WHERE id = ?`;
-
-    // Thực hiện câu lệnh SQL
-    await db.query(sql, [name, new Date(), id]);
-};
-
-const deleteUnit = async id => {
-    // Câu lệnh SQL để xoá dữ liệu từ bảng
-    const sql = `DELETE FROM unit WHERE id = ?`;
-
-    // Thực hiện câu lệnh SQL
-    await db.query(sql, [id]);
-};
-
-module.exports = { createUnit, readUnit, updateUnit, deleteUnit };
+module.exports = userService;
