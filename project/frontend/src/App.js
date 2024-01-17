@@ -5,7 +5,7 @@ import {
     // HistoryPage,
     HomePage,
     // LeaderPage,
-    // LoginPage,
+    LoginPage,
     // ManagerPage,
     NotExistedPage,
     // PrivatePage,
@@ -30,7 +30,7 @@ const App = () => {
             >
                 <Routes>
                     <Route path="*" element={<NotExistedPage />} />
-                    {/* <Route path="/login" element={<LoginPage />} /> */}
+                    <Route path="/login" element={<LoginPage />} />
                     <Route
                         path="/"
                         element={

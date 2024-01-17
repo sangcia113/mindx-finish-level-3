@@ -15,6 +15,10 @@ const userService = {
         return await User.findById(id);
     },
 
+    readUserByUsername: async username => {
+        return await User.findOne({ username });
+    },
+
     updateUser: async (id, userData) => {
         return await User.findByIdAndUpdate(id, userData, { new: true });
     },

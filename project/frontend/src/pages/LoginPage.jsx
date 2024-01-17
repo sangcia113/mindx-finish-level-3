@@ -1,104 +1,160 @@
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button, Card, Checkbox, Flex, Form, Input, Layout, Space, Typography } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Card, Checkbox, Col, Flex, Form, Image, Input, Layout, Row } from 'antd';
-import Text from 'antd/es/typography/Text';
-import React from 'react';
+import { ModalConfirmComponent, ModalErrorComponent } from '../components';
+import { checkToken, createInstance } from '../utils';
+
+const videoSource = require(`../assets/videos/video.mp4`);
+
+const { Item } = Form;
+const { Password } = Input;
+const { Link, Text } = Typography;
 
 const LoginPage = () => {
-    const onFinish = values => {
-        console.log('Success:', values);
-    };
-    const onFinishFailed = errorInfo => {
-        console.log('Failed:', errorInfo);
+    console.log('Run LoginPage');
+
+    const navigate = useNavigate();
+
+    const [modalConfirm, setModalConfirm] = useState({
+        open: false,
+    });
+
+    const [modalError, setModalError] = useState({
+        open: false,
+        error: '',
+    });
+
+    const [form] = Form.useForm();
+
+    useEffect(() => {
+        if (checkToken()) navigate('/');
+    }, []);
+
+    const onFinish = async values => {
+        try {
+            const response = await createInstance().create(`/login`, values);
+            console.log(response.data);
+            const { accessToken } = response.data;
+
+            if (values.remember) {
+                localStorage.setItem('accessToken', accessToken);
+            } else {
+                sessionStorage.setItem('accessToken', accessToken);
+            }
+
+            navigate('/');
+        } catch (error) {
+            console.log(error);
+            setModalError({ error, open: true });
+        }
     };
 
     return (
-        <Layout
-            style={{
-                minHeight: '100vh',
-                // backgroundImage:
-                //     'linear-gradient(to left, #0a9f3f, #2db657, #45ce70, #5be688, #70ffa2)',
-            }}
-        >
-            <Flex justify={'center'} style={{ margin: 'auto' }}>
-                <Card
-                    style={{
-                        minWidth: 400,
-                        boxShadow: '10 10 20 0 rgba(175, 175, 175, 0.75)',
-                    }}
-                >
-                    {/* <Image
-                        src={require('../assets/logo/logoWFC.png')}
-                        width={450}
-                        preview={false}
-                    /> */}
-                    <Row justify={'center'}>
-                        <Form
-                            name="basic"
-                            labelCol={{
-                                span: 24,
-                            }}
-                            wrapperCol={{
-                                span: 24,
-                            }}
-                            initialValues={{
-                                remember: true,
-                            }}
-                            onFinish={onFinish}
-                            onFinishFailed={onFinishFailed}
-                            autoComplete="off"
-                            layout={'vertical'}
-                        >
-                            <Form.Item
-                                label="Username"
-                                name="username"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Please input your username!',
-                                    },
-                                ]}
-                            >
-                                <Input />
-                            </Form.Item>
+        <Layout style={{ height: '100vh' }}>
+            <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                style={{
+                    width: '100vw',
+                    height: '100vh',
+                    objectFit: 'cover',
+                }}
+            >
+                <source src={videoSource} type="video/mp4" />
+                Trình duyệt của bạn không hỗ trợ phát video này!
+            </video>
+            <Card
+                bordered={false}
+                style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                    backdropFilter: 'blur(2px)',
+                    minWidth: 360,
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                }}
+            >
+                <Flex justify="center">
+                    <Text strong style={{ fontSize: 48, padding: '16px 0 32px 0' }}>
+                        L O G I N
+                    </Text>
+                </Flex>
 
-                            <Form.Item
-                                label="Password"
-                                name="password"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Please input your password!',
-                                    },
-                                ]}
-                            >
-                                <Input.Password />
-                            </Form.Item>
+                <Form form={form} onFinish={onFinish}>
+                    <Item
+                        name="username"
+                        rules={[{ required: true, message: 'Bạn chưa nhập tài khoản!' }]}
+                    >
+                        <Input
+                            allowClear
+                            prefix={<UserOutlined />}
+                            placeholder="Username"
+                            style={{ borderRadius: 24, height: 48 }}
+                        />
+                    </Item>
 
-                            <Form.Item
-                                name="remember"
-                                valuePropName="checked"
-                                wrapperCol={{
-                                    offset: 8,
-                                    span: 16,
-                                }}
-                            >
-                                <Checkbox>Remember me</Checkbox>
-                            </Form.Item>
+                    <Item
+                        name="password"
+                        rules={[{ required: true, message: 'Bạn chưa nhập mật khẩu!' }]}
+                    >
+                        <Password
+                            allowClear
+                            prefix={<LockOutlined />}
+                            placeholder="Password"
+                            style={{ borderRadius: 24, height: 48 }}
+                        />
+                    </Item>
 
-                            <Form.Item
-                                wrapperCol={{
-                                    offset: 8,
-                                    span: 16,
-                                }}
+                    <Item name="remember" valuePropName="checked">
+                        <Checkbox style={{ fontSize: 18 }}>Nhớ mật khẩu</Checkbox>
+                    </Item>
+
+                    <Item>
+                        <Flex justify="center">
+                            <Button
+                                htmlType="submit"
+                                type="primary"
+                                style={{ borderRadius: 24, height: 48, width: '100%' }}
                             >
-                                <Button type="primary" htmlType="submit">
-                                    Login
-                                </Button>
-                            </Form.Item>
-                        </Form>
-                    </Row>
-                </Card>
-            </Flex>
+                                Đăng Nhập
+                            </Button>
+                        </Flex>
+                    </Item>
+                </Form>
+
+                <Flex justify="flex-end">
+                    <Link style={{ fontSize: 18 }} onClick={() => setModalConfirm({ open: true })}>
+                        Quên mật khẩu ?
+                    </Link>
+                </Flex>
+            </Card>
+            <ModalConfirmComponent
+                onCancel={() => setModalConfirm({ open: false })}
+                onOk={() => setModalConfirm({ open: false })}
+                open={modalConfirm.open}
+                title="THẤT BẠI"
+                message={
+                    <Space align="center" direction="vertical" size="small">
+                        Gửi yêu cầu cấp lại mật khẩu?
+                        <>
+                            Hoặc bạn có thể liên hệ
+                            <Link href="https://zalo.me/0972868740" target="_blank">
+                                Mr.Sang
+                            </Link>
+                            để được hỗ trợ!
+                        </>
+                    </Space>
+                }
+            />
+            <ModalErrorComponent
+                onOk={() => setModalError({ open: false })}
+                open={modalError.open}
+                error={modalError.error}
+            />
         </Layout>
     );
 };

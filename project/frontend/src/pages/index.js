@@ -3,6 +3,7 @@ import DishDetailPage from './dish/DishDetailPage';
 import DishPage from './dish/DishPage';
 import DishTypePage from './dish/DishTypePage';
 import HomePage from './HomePage';
+import LoginPage from './LoginPage';
 import MenuPage from './MenuPage';
 import NotAuthorizedPage from './NotAuthorizedPage';
 import NotExistedPage from './NotExistedPage';
@@ -22,6 +23,7 @@ export {
     DishPage,
     DishTypePage,
     HomePage,
+    LoginPage,
     MenuPage,
     NotAuthorizedPage,
     NotExistedPage,

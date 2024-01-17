@@ -18,7 +18,7 @@ const userMiddleware = {
             username,
             password,
             departmentId,
-            superiorId,
+            // superiorId,
             roleId,
             createdDate,
         } = req.body;
@@ -28,12 +28,12 @@ const userMiddleware = {
                 code &&
                 name &&
                 birthday &&
-                gender &&
+                (gender || gender === 0) &&
                 numberPhone &&
                 username &&
                 password &&
                 departmentId &&
-                superiorId &&
+                // superiorId &&
                 roleId &&
                 createdDate
             )
