@@ -1,16 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ConfigProvider, Layout } from 'antd';
-import {
-    // HistoryPage,
-    HomePage,
-    // LeaderPage,
-    LoginPage,
-    // ManagerPage,
-    NotExistedPage,
-    // PrivatePage,
-    // UserPage,
-} from './pages/index';
+import { DepartmentPage, HomePage, LoginPage, NotExistedPage, UserPage } from './pages/index';
 import { FooterComponent, HeaderComponent } from './components';
 
 const App = () => {
@@ -43,38 +34,30 @@ const App = () => {
                             // </PrivatePage>
                         }
                     />
-                    {/* <Route
-                        path="/history"
-                        element={
-                            <PrivatePage roles={[1, 2, 3, 4, 5, 6]}>
-                                <HistoryPage />
-                            </PrivatePage>
-                        }
-                    />
-                    <Route
-                        path="/leader"
-                        element={
-                            <PrivatePage roles={[1, 2, 3, 4, 5]}>
-                                <LeaderPage />
-                            </PrivatePage>
-                        }
-                    />
-                    <Route
-                        path="/manager"
-                        element={
-                            <PrivatePage roles={[1, 2, 3, 4]}>
-                                <ManagerPage />
-                            </PrivatePage>
-                        }
-                    />
                     <Route
                         path="/user"
                         element={
-                            <PrivatePage roles={[1, 2, 3, 4]}>
+                            // <PrivatePage roles={[1, 2, 3, 4, 5, 6]}>
+                            <Layout style={{ minHeight: '100vh' }}>
+                                <HeaderComponent />
                                 <UserPage />
-                            </PrivatePage>
+                                <FooterComponent />
+                            </Layout>
+                            // </PrivatePage>
                         }
-                    /> */}
+                    />
+                    <Route
+                        path="/department"
+                        element={
+                            // <PrivatePage roles={[1, 2, 3, 4, 5, 6]}>
+                            <Layout style={{ minHeight: '100vh' }}>
+                                <HeaderComponent />
+                                <DepartmentPage />
+                                <FooterComponent />
+                            </Layout>
+                            // </PrivatePage>
+                        }
+                    />
                 </Routes>
             </ConfigProvider>
         </BrowserRouter>

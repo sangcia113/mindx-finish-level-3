@@ -2,16 +2,7 @@ import React from 'react';
 
 import { Modal } from 'antd';
 
-const ModalComponent = ({
-    open,
-    title,
-    footer,
-    onOk,
-    onCancel,
-    afterClose,
-    width,
-    renderChildren,
-}) => {
+const ModalComponent = ({ open, title, footer, onOk, onCancel, afterClose, width, children }) => {
     return (
         <Modal
             open={open}
@@ -30,7 +21,7 @@ const ModalComponent = ({
                 footer: { textAlign: 'center' },
             }}
         >
-            {renderChildren()}
+            {children}
         </Modal>
     );
 };

@@ -11,13 +11,11 @@ const departmentController = {
         try {
             const departmentData = req.body;
 
-            const response = await createDepartment(departmentData);
+            await createDepartment(departmentData);
 
-            console.log(response);
-
-            res.status(200).json(response);
+            res.status(200).json({ error: 0, message: 'Thành công!' });
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -25,11 +23,9 @@ const departmentController = {
         try {
             const response = await readAllDepartment();
 
-            console.log(response);
-
             res.status(200).json(response);
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -39,11 +35,9 @@ const departmentController = {
 
             const response = await readDepartmentById(id);
 
-            console.log(response);
-
             res.status(200).json(response);
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -53,11 +47,11 @@ const departmentController = {
 
             const departmentData = req.body;
 
-            const response = await updateDepartment(id, departmentData);
+            await updateDepartment(id, departmentData);
 
-            console.log(response);
+            res.status(200).json({ error: 0, message: 'Thành công!' });
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -65,11 +59,11 @@ const departmentController = {
         try {
             const { id } = req.params;
 
-            const response = await deleteDepartment(id);
+            await deleteDepartment(id);
 
-            console.log(response);
+            res.status(200).json({ error: 0, message: 'Thành công!' });
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 };

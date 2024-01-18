@@ -22,6 +22,8 @@ import { handleNotification } from '../../handleAPI/handleNotification';
 
 // Import các hàm xử lý thao tác dữ liệu từ file API cụ thể
 import { deleteData, getData, getDataByType, postData, putData } from '../../handleAPI/api';
+import { createInstance } from '../../utils';
+import Password from 'antd/es/input/Password';
 
 // Destructuring component Text từ Typography
 const { Text } = Typography;
@@ -29,10 +31,7 @@ const { Text } = Typography;
 // Mảng chứa các item breadcrumb
 const itemsOfBreadcrumb = [{ title: '' }, { title: 'Others' }, { title: 'Staff' }];
 
-// Lưu trữ table
-const table = 'staff';
-
-const StaffPage = () => {
+const UserPage = () => {
     // Ghi log ra console khi component DishTypePage được chạy
     console.log('Run DishTypePage....');
 
@@ -60,50 +59,49 @@ const StaffPage = () => {
         console.log('Run useEffect');
 
         // Lấy dữ liệu ban đầu khi component được gắn
-        handleGetData();
-        handleGetDataRole();
-        handleGetDataDepartment();
+        // handleGetData();
+        getUser();
+        getRole();
+        getDepartment();
     }, []);
 
     // Chuyển đổi trạng thái modalOpen giữa true và false
     const handleModal = () => setModalOpen(prevModalOpen => !prevModalOpen);
 
-    const handleGetDataRole = async () => {
+    const getRole = async () => {
         // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const response = await getDataByType('role');
+        const response = await createInstance().read('/role');
         setRole(response.data);
     };
 
-    const handleGetDataDepartment = async () => {
+    const getDepartment = async () => {
         // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const response = await getDataByType('department');
+        const response = await createInstance().read('/department');
         setDepartment(response.data);
     };
 
-    const handleGetData = async () => {
+    const getUser = async () => {
         // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const data = await getData(table);
-        setDataSource(data);
+        const response = await createInstance().read('/user');
+        console.log(response.data);
+        setDataSource(response.data);
     };
 
     const handleInsertData = async values => {
-        // Thêm dữ liệu mới thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        const response = await postData(table, values);
-        handleModal();
-        handleNotification(response, handleGetData);
+        try {
+            const response = await createInstance().create('/user', values);
+            console.log(response);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     const handleUpdateData = async values => {
         // Cập nhật dữ liệu thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        const response = await putData(table, values.id, values);
-        handleModal();
-        handleNotification(response, handleGetData);
     };
 
     const handleDeleteData = async id => {
         // Xóa dữ liệu thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        const response = await deleteData(table, id);
-        handleNotification(response, handleGetData);
     };
 
     const onFinish = values => {
@@ -236,50 +234,63 @@ const StaffPage = () => {
         {
             label: 'Mã nhân viên',
             name: 'code',
-            rules: [{ required: true, message: 'Vui lòng nhập mã nhân viên' }],
-            typeInput: <Input maxLength={50} showCount allowClear />,
+            rules: [{ required: true, message: 'Bạn chưa nhập mã nhân viên' }],
+            typeInput: (
+                <Input allowClear maxLength={10} placeholder="Nhập mã nhân viên" showCount />
+            ),
         },
         {
             label: 'Tên nhân viên',
             name: 'name',
-            rules: [{ required: true, message: 'Vui lòng nhập tên nhân viên' }],
-            typeInput: <Input maxLength={100} showCount allowClear />,
+            rules: [{ required: true, message: 'Bạn chưa nhập tên nhân viên' }],
+            typeInput: (
+                <Input allowClear maxLength={50} placeholder="Nhập tên nhân viên" showCount />
+            ),
         },
         {
             label: 'Ngày sinh',
             name: 'birthday',
-            rules: [{ required: true, message: 'Vui lòng chọn ngày sinh' }],
-            typeInput: <DatePicker allowClear style={{ width: '100%' }} />,
+            rules: [{ required: true, message: 'Bạn chưa chọn ngày sinh' }],
+            typeInput: (
+                <DatePicker
+                    allowClear
+                    format={'DD/MM/YYYY'}
+                    placeholder="Chọn ngày sinh"
+                    style={{ width: '100%' }}
+                />
+            ),
         },
         {
             label: 'Giới tính',
             name: 'gender',
-            rules: [{ required: true, message: 'Vui lòng chọn giới tính' }],
+            rules: [{ required: true, message: 'Bạn chưa chọn giới tính' }],
             typeInput: (
-                <Select allowClear>
+                <Select allowClear placeholder="Chọn giới tính">
                     <Select.Option value={1}>Nam</Select.Option>
                     <Select.Option value={0}>Nữ</Select.Option>
                 </Select>
             ),
         },
         {
-            label: 'Số điện thoại',
-            name: 'numberPhone',
-            rules: [{ required: true, message: 'Vui lòng nhập số điện thoại' }],
-            typeInput: <Input maxLength={9} showCount allowClear prefix="+84" />,
-        },
-        {
-            label: 'Mật khẩu',
-            name: 'pass',
-            rules: [{ required: true, message: 'Vui lòng đặt mật khẩu' }],
-            typeInput: <Input maxLength={50} showCount allowClear />,
+            label: 'Bộ phận',
+            name: 'departmentId',
+            rules: [{ required: true, message: 'Vui lòng chọn bộ phận' }],
+            typeInput: (
+                <Select allowClear placeholder="Chọn bộ phận">
+                    {department.map(item => (
+                        <Select.Option key={item.id} value={item.id}>
+                            {item.name}
+                        </Select.Option>
+                    ))}
+                </Select>
+            ),
         },
         {
             label: 'Chức vụ',
             name: 'roleId',
             rules: [{ required: true, message: 'Vui lòng chọn chức vụ' }],
             typeInput: (
-                <Select allowClear>
+                <Select allowClear placeholder="Chọn chức vụ">
                     {role.map(item => (
                         <Select.Option key={item.id} value={item.id}>
                             {item.name}
@@ -289,17 +300,19 @@ const StaffPage = () => {
             ),
         },
         {
-            label: 'Bộ phận',
-            name: 'departmentId',
-            rules: [{ required: true, message: 'Vui lòng chọn bộ phận' }],
+            label: 'Mật khẩu',
+            name: 'password',
+            rules: [{ required: true, message: 'Vui lòng đặt mật khẩu' }],
             typeInput: (
-                <Select allowClear>
-                    {department.map(item => (
-                        <Select.Option key={item.id} value={item.id}>
-                            {item.name}
-                        </Select.Option>
-                    ))}
-                </Select>
+                <Password allowClear maxLength={100} placeholder="Nhập mật khẩu" showCount />
+            ),
+        },
+        {
+            label: 'Số điện thoại',
+            name: 'numberPhone',
+            rules: [{ required: true, message: 'Vui lòng nhập số điện thoại' }],
+            typeInput: (
+                <Input allowClear maxLength={11} placeholder="Nhập số điện thoại" showCount />
             ),
         },
     ];
@@ -308,24 +321,17 @@ const StaffPage = () => {
     return (
         <>
             {/* Component hiển thị nội dung */}
-            <ContentComponent
-                // Các mục trong breadcrumb
-                items={itemsOfBreadcrumb}
-                renderChildren={() => (
-                    // Component thẻ card
-                    <CardComponent
-                        actionFunc={() => {
-                            setModalTitle('THÊM NHÂN VIÊN');
-                            handleModal();
-                        }}
-                        renderChildren={() => (
-                            // Component bảng dữ liệu
-                            <TableComponent columns={columns} dataSource={dataSource} />
-                        )}
-                        title="NHÂN VIÊN"
-                    />
-                )}
-            />
+            <ContentComponent items={itemsOfBreadcrumb} loading={false}>
+                <CardComponent
+                    actionFunc={() => {
+                        setModalTitle('THÊM NHÂN VIÊN');
+                        handleModal();
+                    }}
+                    title="NHÂN VIÊN"
+                >
+                    <TableComponent columns={columns} dataSource={dataSource} />
+                </CardComponent>
+            </ContentComponent>
             {/* Component hiển thị hộp thoại modal */}
             <ModalComponent
                 // Xử lý sau khi đóng modal
@@ -347,4 +353,4 @@ const StaffPage = () => {
     );
 };
 
-export default StaffPage;
+export default UserPage;

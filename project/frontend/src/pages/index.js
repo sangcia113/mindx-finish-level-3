@@ -10,7 +10,7 @@ import NotExistedPage from './NotExistedPage';
 import IngredientPage from './ingredient/IngredientPage';
 import IngredientTypePage from './ingredient/IngredientTypePage';
 import RolePage from './others/RolePage';
-import StaffPage from './others/StaffPage';
+import UserPage from './others/UserPage';
 import StockInPage from './stock/StockInPage';
 import StockOutPage from './stock/StockOutPage';
 import SupplierPage from './SupplierPage';
@@ -30,7 +30,7 @@ export {
     IngredientPage,
     IngredientTypePage,
     RolePage,
-    StaffPage,
+    UserPage,
     StockInPage,
     StockOutPage,
     SupplierPage,

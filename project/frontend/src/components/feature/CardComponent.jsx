@@ -2,9 +2,9 @@ import React from 'react';
 
 import { Button, Card } from 'antd';
 
-import { PlusLg } from 'react-bootstrap-icons';
+import { PlusCircleFill } from 'react-bootstrap-icons';
 
-const CardComponent = ({ title, actionFunc, renderChildren }) => {
+const CardComponent = ({ title, actionFunc, children }) => {
     return (
         <Card
             title={title}
@@ -12,16 +12,19 @@ const CardComponent = ({ title, actionFunc, renderChildren }) => {
             hoverable
             extra={
                 <Button
-                    // type={'primary'}
-                    shape={'circle'}
-                    icon={<PlusLg style={{ marginTop: '4px' }} />}
+                    icon={<PlusCircleFill style={{ fontSize: 22, marginTop: 3 }} />}
                     onClick={() => actionFunc()}
-                    style={{ color: 'white', backgroundColor: 'dodgerblue' }}
+                    shape={'circle'}
+                    type={'primary'}
                 />
             }
-            style={{ textAlign: 'center', background: 'rgba(255, 255, 255, 0.4)' }}
+            style={{
+                textAlign: 'center',
+                background: 'rgba(255, 255, 255, 0.4)',
+                backdropFilter: 'blur(4px)',
+            }}
         >
-            {renderChildren()}
+            {children}
         </Card>
     );
 };
