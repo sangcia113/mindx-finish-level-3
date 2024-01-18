@@ -1,8 +1,17 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { ConfigProvider, Layout } from 'antd';
-import { DepartmentPage, HomePage, LoginPage, NotExistedPage, UserPage } from './pages/index';
-import { FooterComponent, HeaderComponent } from './components';
+import { ConfigProvider } from 'antd';
+import {
+    DepartmentPage,
+    HomePage,
+    LoginPage,
+    NotExistedPage,
+    PrivatePage,
+    RolePage,
+    SupplierPage,
+    UnitPage,
+    UserPage,
+} from './pages/index';
 
 const App = () => {
     console.log('App run.....');
@@ -25,37 +34,55 @@ const App = () => {
                     <Route
                         path="/"
                         element={
-                            // <PrivatePage roles={[1, 2, 3, 4, 5, 6]}>
-                            <Layout style={{ minHeight: '100vh' }}>
-                                <HeaderComponent />
+                            <PrivatePage
+                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
+                            >
                                 <HomePage />
-                                <FooterComponent />
-                            </Layout>
-                            // </PrivatePage>
+                            </PrivatePage>
                         }
                     />
                     <Route
-                        path="/user"
+                        path="/supplier"
                         element={
-                            // <PrivatePage roles={[1, 2, 3, 4, 5, 6]}>
-                            <Layout style={{ minHeight: '100vh' }}>
-                                <HeaderComponent />
+                            <PrivatePage
+                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
+                            >
+                                <SupplierPage />
+                            </PrivatePage>
+                        }
+                    />
+                    <Route
+                        path="/others-unit"
+                        element={
+                            <PrivatePage
+                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
+                            >
+                                <UnitPage />
+                            </PrivatePage>
+                        }
+                    />
+                    <Route
+                        path="/others-user"
+                        element={
+                            <PrivatePage roles={['65a93be12c65719fb6cf87b9']}>
                                 <UserPage />
-                                <FooterComponent />
-                            </Layout>
-                            // </PrivatePage>
+                            </PrivatePage>
                         }
                     />
                     <Route
-                        path="/department"
+                        path="/others-department"
                         element={
-                            // <PrivatePage roles={[1, 2, 3, 4, 5, 6]}>
-                            <Layout style={{ minHeight: '100vh' }}>
-                                <HeaderComponent />
+                            <PrivatePage roles={['65a93be12c65719fb6cf87b9']}>
                                 <DepartmentPage />
-                                <FooterComponent />
-                            </Layout>
-                            // </PrivatePage>
+                            </PrivatePage>
+                        }
+                    />
+                    <Route
+                        path="/others-role"
+                        element={
+                            <PrivatePage roles={['65a93be12c65719fb6cf87b9']}>
+                                <RolePage />{' '}
+                            </PrivatePage>
                         }
                     />
                 </Routes>

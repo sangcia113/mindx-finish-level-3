@@ -101,13 +101,13 @@ const items = [
                 icon: <CalculatorFill color="DodgerBlue" />,
             },
             {
-                key: 'others-staff',
+                key: 'others-user',
                 label: 'Nhân viên',
                 icon: <PersonVcard color="DodgerBlue" />,
             },
             {
                 key: 'others-department',
-                label: 'Phòng ban',
+                label: 'Bộ phận',
                 icon: <Cast color="DodgerBlue" />,
             },
             {

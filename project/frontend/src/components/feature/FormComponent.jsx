@@ -11,7 +11,7 @@ const FormComponent = ({ form, onFinish, formFields }) => {
             wrapperCol={{ span: 14 }}
             // layout='vertical'
         >
-            <Form.Item name="id" hidden>
+            <Form.Item name="_id" hidden>
                 <Input />
             </Form.Item>
             {formFields.map(({ label, name, rules, typeInput, valuePropName }, index) => (

@@ -1,115 +1,170 @@
-// Import React và hooks từ thư viện React
 import React, { useEffect, useState } from 'react';
+import { Alert, Form, Input, Space } from 'antd';
+import dayjs from 'dayjs';
 
-// Import các component cụ thể từ thư viện antd
-import { Form, Input, Typography } from 'antd';
-
-// Import các component tùy chỉnh từ đường dẫn tương đối
 import {
     CardComponent,
     ContentComponent,
     DropdownComponent,
     FormComponent,
     ModalComponent,
+    ModalConfirmComponent,
+    ModalErrorComponent,
+    ModalSuccessComponent,
     TableComponent,
-} from '../../components/index';
+} from '../../components';
 
-// Import hàm xử lý thông báo từ file API cụ thể
-import { handleNotification } from '../../handleAPI/handleNotification';
+import { createInstance } from '../../utils';
 
-// Import các hàm xử lý thao tác dữ liệu từ file API cụ thể
-import { deleteData, getData, postData, putData } from '../../handleAPI/api';
-
-// Destructuring component Text từ Typography
-const { Text } = Typography;
-
-// Mảng chứa các item breadcrumb
 const itemsOfBreadcrumb = [{ title: '' }, { title: 'Others' }, { title: 'Role' }];
 
-// Lưu trữ table
-const table = 'role';
-
-// Các trường trong biểu mẫu
 const formFields = [
     {
-        label: 'Tên chức vụ',
+        label: 'Mã phân quyền',
+        name: 'code',
+        rules: [{ required: true, message: 'Vui lòng nhập mã phân quyền' }],
+        typeInput: <Input maxLength={50} showCount allowClear />,
+    },
+    {
+        label: 'Tên phân quyền',
         name: 'name',
-        rules: [{ required: true, message: 'Vui lòng nhập chức vụ' }],
+        rules: [{ required: true, message: 'Vui lòng nhập tên phân quyền' }],
         typeInput: <Input maxLength={100} showCount allowClear />,
     },
 ];
 
 const RolePage = () => {
-    // Ghi log ra console khi component RolePage được chạy
     console.log('Run RolePage....');
 
-    // Khởi tạo biến state sử dụng hook useState
-    const [dataSource, setDataSource] = useState([]);
+    const [role, setRole] = useState([]);
 
-    // Khởi tạo biến state sử dụng hook useState
-    const [modalOpen, setModalOpen] = useState(false);
+    const [modalMain, setModalMain] = useState({
+        open: false,
+        title: '',
+    });
 
-    // Khởi tạo biến state sử dụng hook useState
-    const [modalTitle, setModalTitle] = useState('');
+    const [modalConfirm, setModalConfirm] = useState({
+        onOk: () => {},
+        open: false,
+        message: '',
+    });
 
-    // Khởi tạo đối tượng form sử dụng hook useForm của Form
+    const [modalError, setModalError] = useState({
+        open: false,
+        error: '',
+    });
+
+    const [modalSuccess, setModalSuccess] = useState({
+        open: false,
+        message: '',
+    });
+
     const [form] = Form.useForm();
 
     useEffect(() => {
-        // Ghi log ra console khi hook useEffect được kích hoạt
-        console.log('Run useEffect');
-
-        // Lấy dữ liệu ban đầu khi component được gắn
-        handleGetData();
+        readRole();
     }, []);
 
-    // Chuyển đổi trạng thái modalOpen giữa true và false
-    const handleModal = () => setModalOpen(prevModalOpen => !prevModalOpen);
+    const readRole = async () => {
+        try {
+            const response = await createInstance().read('/role');
 
-    const handleGetData = async () => {
-        // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const data = await getData(table);
-        setDataSource(data);
+            setRole(response.data.map(item => ({ ...item, key: item._id })));
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
-    const handleInsertData = async values => {
-        // Thêm dữ liệu mới thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        const response = await postData(table, values);
-        handleModal();
-        handleNotification(response, handleGetData);
+    const createRole = async values => {
+        try {
+            const response = await createInstance().create('/role', values);
+
+            setModalSuccess({ open: true, message: response?.data?.message });
+
+            setModalMain({ open: false });
+
+            readRole();
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
-    const handleUpdateData = async values => {
-        // Cập nhật dữ liệu thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        const response = await putData(table, values.id, values);
-        handleModal();
-        handleNotification(response, handleGetData);
+    const updateRole = async values => {
+        try {
+            const response = await createInstance().update(`/role/${values._id}`, values);
+
+            setModalMain({ open: false });
+
+            setModalSuccess({ open: true, message: response?.data?.message });
+
+            readRole();
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
-    const handleDeleteData = async id => {
-        // Xóa dữ liệu thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        const response = await deleteData(table, id);
-        handleNotification(response, handleGetData);
+    const removeRole = async id => {
+        try {
+            const response = await createInstance().remove(`/role/${id}`);
+
+            setModalSuccess({ open: true, message: response?.data?.message });
+
+            setModalConfirm({ open: false });
+
+            readRole();
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
     const onFinish = values => {
-        // Xử lý khi hoàn thành biểu mẫu, kiểm tra và gọi các hàm cập nhật hoặc thêm mới dữ liệu
-        values.id ? handleUpdateData(values) : handleInsertData(values);
+        values._id ? updateRole(values) : createRole(values);
     };
 
-    // Các cột trong bảng dữ liệu
     const columns = [
         {
-            title: '#',
-            dataIndex: 'id',
-            key: 'id',
-            sorter: (a, b) => a.id - b.id,
+            dataIndex: '_id',
+            key: '_id',
+            render: (_, record) => (
+                <DropdownComponent
+                    actionDelete={() =>
+                        setModalConfirm({
+                            onOk: () => removeRole(record._id),
+                            open: true,
+                            message: (
+                                <Space direction="vertical" align="center">
+                                    Bạn có chắc muốn xóa phân quyền?
+                                    <b>{record.name}</b>
+                                    khỏi CSDL không?
+                                    <Alert
+                                        message="Thao tác này không thể hoàn tác!"
+                                        type="danger"
+                                        style={{
+                                            backgroundColor: '#ff4d4f',
+                                            color: 'white',
+                                        }}
+                                    />
+                                </Space>
+                            ),
+                        })
+                    }
+                    actionEdit={() => {
+                        form.setFieldsValue(record);
+                        setModalMain({ open: true, title: 'SỬA PHÂN QUYỀN' });
+                    }}
+                />
+            ),
         },
         {
-            title: 'Tên',
+            title: 'Mã phân quyền',
+            dataIndex: 'code',
+            key: 'code',
+            sorter: (a, b) => a.code.length - b.code.length,
+        },
+        {
+            title: 'Tên phân quyền',
             dataIndex: 'name',
             key: 'name',
-            render: record => <Text strong>{record}</Text>,
             sorter: (a, b) => a.name.length - b.name.length,
         },
         {
@@ -117,63 +172,50 @@ const RolePage = () => {
             dataIndex: 'createdDate',
             key: 'createdDate',
             ellipsis: true,
-        },
-        {
-            title: 'Action',
-            dataIndex: 'action',
-            key: 'action',
-            render: (_, record) => (
-                <DropdownComponent
-                    actionDelete={() => handleDeleteData(record.id)}
-                    actionEdit={() => {
-                        form.setFieldsValue(record);
-                        setModalTitle('SỬA CHỨC VỤ');
-                        handleModal();
-                    }}
-                    textDelete={record.name}
-                />
-            ),
+            render: record => dayjs(record).format('DD/MM/YYYY HH:mm'),
         },
     ];
 
-    // Trả về giao diện
     return (
         <>
-            {/* Component hiển thị nội dung */}
-            <ContentComponent
-                // Các mục trong breadcrumb
-                items={itemsOfBreadcrumb}
-                renderChildren={() => (
-                    // Component thẻ card
-                    <CardComponent
-                        actionFunc={() => {
-                            setModalTitle('THÊM CHỨC VỤ');
-                            handleModal();
-                        }}
-                        renderChildren={() => (
-                            // Component bảng dữ liệu
-                            <TableComponent columns={columns} dataSource={dataSource} />
-                        )}
-                        title="CHỨC VỤ"
-                    />
-                )}
-            />
-            {/* Component hiển thị hộp thoại modal */}
+            <ContentComponent items={itemsOfBreadcrumb} loading={false}>
+                <CardComponent
+                    actionFunc={() => {
+                        setModalMain({ open: true, title: 'THÊM PHÂN QUYỀN' });
+                    }}
+                    title="PHÂN QUYỀN"
+                >
+                    <TableComponent columns={columns} dataSource={role} />
+                </CardComponent>
+            </ContentComponent>
+
             <ModalComponent
-                // Xử lý sau khi đóng modal
                 afterClose={() => form.resetFields()}
-                // Xử lý khi nhấn nút Hủy
-                onCancel={handleModal}
-                // Xử lý khi nhấn nút OK
+                onCancel={() => setModalMain({ open: false })}
                 onOk={() => form.submit()}
-                // Trạng thái mở hoặc đóng của modal
-                open={modalOpen}
-                renderChildren={() => (
-                    // Component biểu mẫu
-                    <FormComponent form={form} formFields={formFields} onFinish={onFinish} />
-                )}
-                // Tiêu đề của modal
-                title={modalTitle}
+                open={modalMain.open}
+                title={modalMain.title}
+            >
+                <FormComponent form={form} formFields={formFields} onFinish={onFinish} />
+            </ModalComponent>
+
+            <ModalConfirmComponent
+                onCancel={() => setModalConfirm({ open: false })}
+                onOk={modalConfirm.onOk}
+                open={modalConfirm.open}
+                message={modalConfirm.message}
+            />
+
+            <ModalErrorComponent
+                onOk={() => setModalError({ open: false })}
+                open={modalError.open}
+                error={modalError.error}
+            />
+
+            <ModalSuccessComponent
+                onOk={() => setModalSuccess({ open: false })}
+                open={modalSuccess.open}
+                message={modalSuccess.message}
             />
         </>
     );

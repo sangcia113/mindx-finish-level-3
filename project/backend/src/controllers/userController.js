@@ -6,18 +6,20 @@ const {
     deleteUser,
 } = require('../services/userService');
 
+const { encodePassword } = require('../utils/handleHashPassword');
+
 const userController = {
     createUser: async (req, res) => {
         try {
             const userData = req.body;
 
-            const response = await createUser(userData);
+            const hashedPassword = encodePassword(userData.password);
 
-            console.log(response);
+            await createUser({ ...userData, password: hashedPassword });
 
-            res.status(200).json(response);
+            res.status(200).json({ error: 0, message: 'Thành công!' });
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -25,11 +27,9 @@ const userController = {
         try {
             const response = await readAllUser();
 
-            console.log(response);
-
             res.status(200).json(response);
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -39,11 +39,9 @@ const userController = {
 
             const response = await readUserById(id);
 
-            console.log(response);
-
             res.status(200).json(response);
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -53,11 +51,13 @@ const userController = {
 
             const userData = req.body;
 
-            const response = await updateUser(id, userData);
+            const hashedPassword = encodePassword(userData.password);
 
-            console.log(response);
+            await updateUser(id, { ...userData, password: hashedPassword });
+
+            res.status(200).json({ error: 0, message: 'Thành công!' });
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -65,11 +65,11 @@ const userController = {
         try {
             const { id } = req.params;
 
-            const response = await deleteUser(id);
+            await deleteUser(id);
 
-            console.log(response);
+            res.status(200).json({ error: 0, message: 'Thành công!' });
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 };

@@ -8,9 +8,9 @@ const {
     deleteUser,
 } = require('../controllers/userController');
 
-const { checkBody, checkParams } = require('../middlewares/userMiddleware');
+const { checkBody, checkParams, checkIsExisted } = require('../middlewares/userMiddleware');
 
-route.post('/', checkBody, createUser);
+route.post('/', checkBody, checkIsExisted, createUser);
 
 route.get('/', readAllUser);
 

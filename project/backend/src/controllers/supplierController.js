@@ -11,13 +11,11 @@ const supplierController = {
         try {
             const supplierData = req.body;
 
-            const response = await createSupplier(supplierData);
+            await createSupplier(supplierData);
 
-            console.log(response);
-
-            res.status(200).json(response);
+            res.status(200).json({ error: 0, message: 'Thành công!' });
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -25,11 +23,9 @@ const supplierController = {
         try {
             const response = await readAllSupplier();
 
-            console.log(response);
-
             res.status(200).json(response);
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -39,11 +35,9 @@ const supplierController = {
 
             const response = await readSupplierById(id);
 
-            console.log(response);
-
             res.status(200).json(response);
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -53,11 +47,11 @@ const supplierController = {
 
             const supplierData = req.body;
 
-            const response = await updateSupplier(id, supplierData);
+            await updateSupplier(id, supplierData);
 
-            console.log(response);
+            res.status(200).json({ error: 0, message: 'Thành công!' });
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -65,11 +59,11 @@ const supplierController = {
         try {
             const { id } = req.params;
 
-            const response = await deleteSupplier(id);
+            await deleteSupplier(id);
 
-            console.log(response);
+            res.status(200).json({ error: 0, message: 'Thành công!' });
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 };

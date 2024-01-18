@@ -9,7 +9,6 @@ const router = require('express').Router();
 // const menuDetailRouter = require('./menuDetailRouter');
 // const staffRouter = require('./staffRouter');
 // const stockInRouter = require('./stockInRouter');
-// const supplierRouter = require('./supplierRouter');
 // const unitRouter = require('./unitRouter');
 
 const departmentRoute = require('./departmentRoute');

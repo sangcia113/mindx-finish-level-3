@@ -5,8 +5,8 @@ const supplierSchema = new mongoose.Schema({
     name: { type: String, required: true },
     numberPhone: { type: String, required: true, unique: true },
     address: { type: String, required: true },
-    createdDate: { type: String, required: true },
-    updatedDate: { type: String, default: null },
+    createdDate: { type: Date, required: true, default: Date.now },
+    updatedDate: { type: Date, default: null },
 });
 
 const Supplier = mongoose.model('Supplier', supplierSchema, 'suppliers');

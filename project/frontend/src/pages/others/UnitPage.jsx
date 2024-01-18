@@ -1,179 +1,221 @@
-// Import React và hooks từ thư viện React
 import React, { useEffect, useState } from 'react';
+import { Alert, Form, Input, Space } from 'antd';
+import dayjs from 'dayjs';
 
-// Import các component cụ thể từ thư viện antd
-import { Form, Input, Typography } from 'antd';
-
-// Import các component tùy chỉnh từ đường dẫn tương đối
 import {
     CardComponent,
     ContentComponent,
     DropdownComponent,
     FormComponent,
     ModalComponent,
+    ModalConfirmComponent,
+    ModalErrorComponent,
+    ModalSuccessComponent,
     TableComponent,
-} from '../../components/index';
+} from '../../components';
 
-// Import hàm xử lý thông báo từ file API cụ thể
-import { handleNotification } from '../../handleAPI/handleNotification';
+import { createInstance } from '../../utils';
 
-// Import các hàm xử lý thao tác dữ liệu từ file API cụ thể
-import { deleteData, getData, postData, putData } from '../../handleAPI/api';
-
-// Destructuring component Text từ Typography
-const { Text } = Typography;
-
-// Mảng chứa các item breadcrumb
 const itemsOfBreadcrumb = [{ title: '' }, { title: 'Others' }, { title: 'Unit' }];
 
-// Lưu trữ table
-const table = 'unit';
-
-// Các trường trong biểu mẫu
 const formFields = [
     {
-        label: 'Đơn vị tính',
+        label: 'Mã đơn vị tính',
+        name: 'code',
+        rules: [{ required: true, message: 'Vui lòng nhập mã đơn vị tính' }],
+        typeInput: <Input maxLength={50} showCount allowClear />,
+    },
+    {
+        label: 'Tên đơn vị tính',
         name: 'name',
-        rules: [{ required: true, message: 'Vui lòng nhập đơn vị tính' }],
+        rules: [{ required: true, message: 'Vui lòng nhập tên đơn vị tính' }],
         typeInput: <Input maxLength={100} showCount allowClear />,
     },
 ];
 
 const UnitPage = () => {
-    // Ghi log ra console khi component UnitPage được chạy
     console.log('Run UnitPage....');
 
-    // Khởi tạo biến state sử dụng hook useState
-    const [dataSource, setDataSource] = useState([]);
+    const [unit, setUnit] = useState([]);
 
-    // Khởi tạo biến state sử dụng hook useState
-    const [modalOpen, setModalOpen] = useState(false);
+    const [modalMain, setModalMain] = useState({
+        open: false,
+        title: '',
+    });
 
-    // Khởi tạo biến state sử dụng hook useState
-    const [modalTitle, setModalTitle] = useState('');
+    const [modalConfirm, setModalConfirm] = useState({
+        onOk: () => {},
+        open: false,
+        message: '',
+    });
 
-    // Khởi tạo đối tượng form sử dụng hook useForm của Form
+    const [modalError, setModalError] = useState({
+        open: false,
+        error: '',
+    });
+
+    const [modalSuccess, setModalSuccess] = useState({
+        open: false,
+        message: '',
+    });
+
     const [form] = Form.useForm();
 
     useEffect(() => {
-        // Ghi log ra console khi hook useEffect được kích hoạt
-        console.log('Run useEffect');
-
-        // Lấy dữ liệu ban đầu khi component được gắn
-        handleGetData();
+        readUnit();
     }, []);
 
-    // Chuyển đổi trạng thái modalOpen giữa true và false
-    const handleModal = () => setModalOpen(prevModalOpen => !prevModalOpen);
+    const readUnit = async () => {
+        try {
+            const response = await createInstance().read('/unit');
 
-    const handleGetData = async () => {
-        // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const data = await getData(table);
-        setDataSource(data);
+            setUnit(response.data.map(item => ({ ...item, key: item._id })));
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
-    const handleInsertData = async values => {
-        // Thêm dữ liệu mới thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        const response = await postData(table, values);
-        handleModal();
-        handleNotification(response, handleGetData);
+    const createUnit = async values => {
+        try {
+            const response = await createInstance().create('/unit', values);
+
+            setModalSuccess({ open: true, message: response?.data?.message });
+
+            setModalMain({ open: false });
+
+            readUnit();
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
-    const handleUpdateData = async values => {
-        // Cập nhật dữ liệu thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        const response = await putData(table, values.id, values);
-        handleModal();
-        handleNotification(response, handleGetData);
+    const updateUnit = async values => {
+        try {
+            const response = await createInstance().update(`/unit/${values._id}`, values);
+
+            setModalMain({ open: false });
+
+            setModalSuccess({ open: true, message: response?.data?.message });
+
+            readUnit();
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
-    const handleDeleteData = async id => {
-        // Xóa dữ liệu thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        const response = await deleteData(table, id);
-        handleNotification(response, handleGetData);
+    const removeUnit = async id => {
+        try {
+            const response = await createInstance().remove(`/unit/${id}`);
+
+            setModalSuccess({ open: true, message: response?.data?.message });
+
+            setModalConfirm({ open: false });
+
+            readUnit();
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
     const onFinish = values => {
-        // Xử lý khi hoàn thành biểu mẫu, kiểm tra và gọi các hàm cập nhật hoặc thêm mới dữ liệu
-        values.id ? handleUpdateData(values) : handleInsertData(values);
+        values._id ? updateUnit(values) : createUnit(values);
     };
 
-    // Các cột trong bảng dữ liệu
     const columns = [
         {
-            title: '#',
-            dataIndex: 'id',
-            key: 'id',
-            sorter: (a, b) => a.id - b.id,
+            dataIndex: '_id',
+            key: '_id',
+            render: (_, record) => (
+                <DropdownComponent
+                    actionDelete={() =>
+                        setModalConfirm({
+                            onOk: () => removeUnit(record._id),
+                            open: true,
+                            message: (
+                                <Space direction="vertical" align="center">
+                                    Bạn có chắc muốn xóa đơn vị tính?
+                                    <b>{record.name}</b>
+                                    khỏi CSDL không?
+                                    <Alert
+                                        message="Thao tác này không thể hoàn tác!"
+                                        type="danger"
+                                        style={{
+                                            backgroundColor: '#ff4d4f',
+                                            color: 'white',
+                                        }}
+                                    />
+                                </Space>
+                            ),
+                        })
+                    }
+                    actionEdit={() => {
+                        form.setFieldsValue(record);
+                        setModalMain({ open: true, title: 'SỬA ĐƠN VỊ TÍNH' });
+                    }}
+                />
+            ),
         },
         {
-            title: 'Tên',
+            title: 'Mã đơn vị tính',
+            dataIndex: 'code',
+            key: 'code',
+            sorter: (a, b) => a.code.length - b.code.length,
+        },
+        {
+            title: 'Tên đơn vị tính',
             dataIndex: 'name',
             key: 'name',
             sorter: (a, b) => a.name.length - b.name.length,
-            render: record => <Text strong>{record}</Text>,
         },
         {
             title: 'Ngày tạo',
             dataIndex: 'createdDate',
             key: 'createdDate',
             ellipsis: true,
-        },
-        {
-            title: 'Action',
-            dataIndex: 'action',
-            key: 'action',
-            render: (_, record) => (
-                <DropdownComponent
-                    actionDelete={() => handleDeleteData(record.id)}
-                    actionEdit={() => {
-                        form.setFieldsValue(record);
-                        setModalTitle('SỬA ĐƠN VỊ TÍNH');
-                        handleModal();
-                    }}
-                    textDelete={record.name}
-                />
-            ),
+            render: record => dayjs(record).format('DD/MM/YYYY HH:mm'),
         },
     ];
 
-    // Trả về giao diện
     return (
         <>
-            {/* Component hiển thị nội dung */}
-            <ContentComponent
-                // Các mục trong breadcrumb
-                items={itemsOfBreadcrumb}
-                renderChildren={() => (
-                    // Component thẻ card
-                    <CardComponent
-                        actionFunc={() => {
-                            setModalTitle('THÊM ĐƠN VỊ TÍNH');
-                            handleModal();
-                        }}
-                        renderChildren={() => (
-                            // Component bảng dữ liệu
-                            <TableComponent columns={columns} dataSource={dataSource} />
-                        )}
-                        title="ĐƠN VỊ TÍNH"
-                    />
-                )}
-            />
-            {/* Component hiển thị hộp thoại modal */}
+            <ContentComponent items={itemsOfBreadcrumb} loading={false}>
+                <CardComponent
+                    actionFunc={() => {
+                        setModalMain({ open: true, title: 'THÊM ĐƠN VỊ TÍNH' });
+                    }}
+                    title="ĐƠN VỊ TÍNH"
+                >
+                    <TableComponent columns={columns} dataSource={unit} />
+                </CardComponent>
+            </ContentComponent>
+
             <ModalComponent
-                // Xử lý sau khi đóng modal
                 afterClose={() => form.resetFields()}
-                // Xử lý khi nhấn nút Hủy
-                onCancel={handleModal}
-                // Xử lý khi nhấn nút OK
+                onCancel={() => setModalMain({ open: false })}
                 onOk={() => form.submit()}
-                // Trạng thái mở hoặc đóng của modal
-                open={modalOpen}
-                renderChildren={() => (
-                    // Component biểu mẫu
-                    <FormComponent form={form} formFields={formFields} onFinish={onFinish} />
-                )}
-                // Tiêu đề của modal
-                title={modalTitle}
+                open={modalMain.open}
+                title={modalMain.title}
+            >
+                <FormComponent form={form} formFields={formFields} onFinish={onFinish} />
+            </ModalComponent>
+
+            <ModalConfirmComponent
+                onCancel={() => setModalConfirm({ open: false })}
+                onOk={modalConfirm.onOk}
+                open={modalConfirm.open}
+                message={modalConfirm.message}
+            />
+
+            <ModalErrorComponent
+                onOk={() => setModalError({ open: false })}
+                open={modalError.open}
+                error={modalError.error}
+            />
+
+            <ModalSuccessComponent
+                onOk={() => setModalSuccess({ open: false })}
+                open={modalSuccess.open}
+                message={modalSuccess.message}
             />
         </>
     );

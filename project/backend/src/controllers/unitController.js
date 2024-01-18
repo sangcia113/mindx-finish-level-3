@@ -11,13 +11,11 @@ const unitController = {
         try {
             const unitData = req.body;
 
-            const response = await createUnit(unitData);
+            await createUnit(unitData);
 
-            console.log(response);
-
-            res.status(200).json(response);
+            res.status(200).json({ error: 0, message: 'Thành công!' });
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -25,11 +23,9 @@ const unitController = {
         try {
             const response = await readAllUnit();
 
-            console.log(response);
-
             res.status(200).json(response);
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -39,11 +35,9 @@ const unitController = {
 
             const response = await readUnitById(id);
 
-            console.log(response);
-
             res.status(200).json(response);
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -53,11 +47,11 @@ const unitController = {
 
             const unitData = req.body;
 
-            const response = await updateUnit(id, unitData);
+            await updateUnit(id, unitData);
 
-            console.log(response);
+            res.status(200).json({ error: 0, message: 'Thành công!' });
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -65,11 +59,11 @@ const unitController = {
         try {
             const { id } = req.params;
 
-            const response = await deleteUnit(id);
+            await deleteUnit(id);
 
-            console.log(response);
+            res.status(200).json({ error: 0, message: 'Thành công!' });
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 };

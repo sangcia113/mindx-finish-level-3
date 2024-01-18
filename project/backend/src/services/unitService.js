@@ -1,27 +1,19 @@
 const Unit = require('../models/unitModel');
 
 const userService = {
-    createUnit: async userData => {
-        const unit = new Unit(userData);
+    createUnit: async unitData => await new Unit(unitData).save(),
 
-        return await unit.save();
+    readAllUnit: async () => await Unit.find(),
+
+    readUnitById: async id => await Unit.findById(id),
+
+    updateUnit: async (id, unitData) => {
+        unitData.updatedDate = new Date();
+
+        return await Unit.findByIdAndUpdate(id, unitData, { new: true });
     },
 
-    readAllUnit: async () => {
-        return await Unit.find();
-    },
-
-    readUnitById: async id => {
-        return await Unit.findById(id);
-    },
-
-    updateUnit: async (id, userData) => {
-        return await Unit.findByIdAndUpdate(id, userData, { new: true });
-    },
-
-    deleteUnit: async id => {
-        return await Unit.findByIdAndDelete(id);
-    },
+    deleteUnit: async id => await Unit.findByIdAndDelete(id),
 };
 
 module.exports = userService;

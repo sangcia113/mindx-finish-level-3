@@ -1,3 +1,5 @@
+const { checkUserIsExisted } = require('../services/userService');
+
 const userMiddleware = {
     checkParams: async (req, res, next) => {
         const { id } = req.params;
@@ -9,19 +11,8 @@ const userMiddleware = {
     },
 
     checkBody: async (req, res, next) => {
-        const {
-            code,
-            name,
-            birthday,
-            gender,
-            numberPhone,
-            username,
-            password,
-            departmentId,
-            // superiorId,
-            roleId,
-            createdDate,
-        } = req.body;
+        const { code, name, birthday, gender, numberPhone, password, departmentId, roleId } =
+            req.body;
 
         if (
             !(
@@ -30,15 +21,25 @@ const userMiddleware = {
                 birthday &&
                 (gender || gender === 0) &&
                 numberPhone &&
-                username &&
                 password &&
                 departmentId &&
-                // superiorId &&
-                roleId &&
-                createdDate
+                roleId
             )
         )
             return res.status(400).json({ error: -1002, message: 'Dữ liệu đầu vào không hợp lệ' });
+
+        next();
+    },
+
+    checkIsExisted: async (req, res, next) => {
+        const { code, numberPhone } = req.body;
+
+        const isExisted = await checkUserIsExisted(code, numberPhone);
+
+        if (isExisted)
+            return res
+                .status(400)
+                .json({ error: -1010, message: 'Người dùng đã tồn tại trong hệ thống!' });
 
         next();
     },

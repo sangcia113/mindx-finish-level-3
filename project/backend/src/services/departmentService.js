@@ -1,27 +1,19 @@
 const Department = require('../models/departmentModel');
 
 const departmentService = {
-    createDepartment: async departmentData => {
-        const department = new Department(departmentData);
+    createDepartment: async departmentData => await new Department(departmentData).save(),
 
-        return await department.save();
-    },
+    readAllDepartment: async () => await Department.find(),
 
-    readAllDepartment: async () => {
-        return await Department.find();
-    },
-
-    readDepartmentById: async id => {
-        return await Department.findById(id);
-    },
+    readDepartmentById: async id => await Department.findById(id),
 
     updateDepartment: async (id, departmentData) => {
+        departmentData.updatedDate = new Date();
+
         return await Department.findByIdAndUpdate(id, departmentData, { new: true });
     },
 
-    deleteDepartment: async id => {
-        return await Department.findByIdAndDelete(id);
-    },
+    deleteDepartment: async id => await Department.findByIdAndDelete(id),
 };
 
 module.exports = departmentService;

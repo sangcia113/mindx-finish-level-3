@@ -6,12 +6,11 @@ const userSchema = new mongoose.Schema({
     birthday: { type: String, required: true },
     gender: { type: Number, required: true },
     numberPhone: { type: String, required: true, unique: true },
-    username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     departmentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Department', required: true },
     roleId: { type: mongoose.Schema.Types.ObjectId, ref: 'Role', required: true },
-    createdDate: { type: String, required: true },
-    updatedDate: { type: String, default: null },
+    createdDate: { type: Date, required: true, default: Date.now },
+    updatedDate: { type: Date, default: null },
 });
 
 const User = mongoose.model('User', userSchema, 'users');

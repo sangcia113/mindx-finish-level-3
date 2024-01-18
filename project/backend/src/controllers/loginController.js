@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const { readUserByUsername } = require('../services/userService');
+const { readUserByNumberphone } = require('../services/userService');
 
 const { decodePassword } = require('../utils');
 
@@ -12,7 +12,7 @@ const loginController = {
             return res.status(400).json({ error: -1002, message: 'Dữ liệu đầu vào không hợp lệ!' });
 
         try {
-            const results = await readUserByUsername(username);
+            const results = await readUserByNumberphone(username);
 
             if (!results)
                 return res

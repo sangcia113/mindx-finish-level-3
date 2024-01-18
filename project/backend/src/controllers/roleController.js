@@ -11,13 +11,11 @@ const roleController = {
         try {
             const roleData = req.body;
 
-            const response = await createRole(roleData);
+            await createRole(roleData);
 
-            console.log(response);
-
-            res.status(200).json(response);
+            res.status(200).json({ error: 0, message: 'Thành công!' });
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -25,11 +23,9 @@ const roleController = {
         try {
             const response = await readAllRole();
 
-            console.log(response);
-
             res.status(200).json(response);
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -39,11 +35,9 @@ const roleController = {
 
             const response = await readRoleById(id);
 
-            console.log(response);
-
             res.status(200).json(response);
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -53,11 +47,11 @@ const roleController = {
 
             const roleData = req.body;
 
-            const response = await updateRole(id, roleData);
+            await updateRole(id, roleData);
 
-            console.log(response);
+            res.status(200).json({ error: 0, message: 'Thành công!' });
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 
@@ -65,11 +59,11 @@ const roleController = {
         try {
             const { id } = req.params;
 
-            const response = await deleteRole(id);
+            await deleteRole(id);
 
-            console.log(response);
+            res.status(200).json({ error: 0, message: 'Thành công!' });
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thất bại!' });
         }
     },
 };

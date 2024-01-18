@@ -1,126 +1,182 @@
-// Import React và hooks từ thư viện React
 import React, { useEffect, useState } from 'react';
-
-// Import các component cụ thể từ thư viện antd
-import { DatePicker, Form, Input, Select, Tag, Typography } from 'antd';
-
-// Import hàm dayjs
+import { Alert, DatePicker, Form, Input, Select, Space, Tag, Typography } from 'antd';
 import dayjs from 'dayjs';
 
-// Import các component tùy chỉnh từ đường dẫn tương đối
 import {
     CardComponent,
     ContentComponent,
     DropdownComponent,
     FormComponent,
     ModalComponent,
+    ModalConfirmComponent,
+    ModalErrorComponent,
+    ModalSuccessComponent,
     TableComponent,
-} from '../../components/index';
+} from '../../components';
 
-// Import hàm xử lý thông báo từ file API cụ thể
-import { handleNotification } from '../../handleAPI/handleNotification';
-
-// Import các hàm xử lý thao tác dữ liệu từ file API cụ thể
-import { deleteData, getData, getDataByType, postData, putData } from '../../handleAPI/api';
 import { createInstance } from '../../utils';
-import Password from 'antd/es/input/Password';
 
-// Destructuring component Text từ Typography
+const { Password } = Input;
 const { Text } = Typography;
 
-// Mảng chứa các item breadcrumb
-const itemsOfBreadcrumb = [{ title: '' }, { title: 'Others' }, { title: 'Staff' }];
+const itemsOfBreadcrumb = [{ title: '' }, { title: 'Others' }, { title: 'User' }];
 
 const UserPage = () => {
-    // Ghi log ra console khi component DishTypePage được chạy
     console.log('Run DishTypePage....');
 
-    // Khởi tạo biến state sử dụng hook useState
-    const [dataSource, setDataSource] = useState([]);
+    const [user, setUser] = useState([]);
 
-    // Khởi tạo biến state sử dụng hook useState
-    const [modalOpen, setModalOpen] = useState(false);
-
-    // Khởi tạo biến state sử dụng hook useState
-    const [modalTitle, setModalTitle] = useState('');
-
-    // Set account type cho thẻ Select
     const [role, setRole] = useState([]);
 
-    // Set department cho thẻ Select
     const [department, setDepartment] = useState([]);
 
-    // Khởi tạo đối tượng form sử dụng hook useForm của Form
+    const [modalMain, setModalMain] = useState({
+        open: false,
+        title: '',
+    });
+
+    const [modalConfirm, setModalConfirm] = useState({
+        onOk: () => {},
+        open: false,
+        message: '',
+    });
+
+    const [modalError, setModalError] = useState({
+        open: false,
+        error: '',
+    });
+
+    const [modalSuccess, setModalSuccess] = useState({
+        open: false,
+        message: '',
+    });
+
     const [form] = Form.useForm();
 
-    // Sử dụng useEffect để gọi hàm handleGetData
     useEffect(() => {
-        // Ghi log ra console khi hook useEffect được kích hoạt
-        console.log('Run useEffect');
-
-        // Lấy dữ liệu ban đầu khi component được gắn
-        // handleGetData();
-        getUser();
-        getRole();
-        getDepartment();
+        readUser();
+        readRole();
+        readDepartment();
     }, []);
 
-    // Chuyển đổi trạng thái modalOpen giữa true và false
-    const handleModal = () => setModalOpen(prevModalOpen => !prevModalOpen);
-
-    const getRole = async () => {
-        // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const response = await createInstance().read('/role');
-        setRole(response.data);
-    };
-
-    const getDepartment = async () => {
-        // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const response = await createInstance().read('/department');
-        setDepartment(response.data);
-    };
-
-    const getUser = async () => {
-        // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const response = await createInstance().read('/user');
-        console.log(response.data);
-        setDataSource(response.data);
-    };
-
-    const handleInsertData = async values => {
+    const readRole = async () => {
         try {
-            const response = await createInstance().create('/user', values);
-            console.log(response);
+            const response = await createInstance().read('/role');
+
+            setRole(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
-            console.log(error);
+            setModalError({ open: true, error });
         }
     };
 
-    const handleUpdateData = async values => {
-        // Cập nhật dữ liệu thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
+    const readDepartment = async () => {
+        try {
+            const response = await createInstance().read('/department');
+
+            setDepartment(response.data.map(item => ({ ...item, key: item._id })));
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
-    const handleDeleteData = async id => {
-        // Xóa dữ liệu thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
+    const readUser = async () => {
+        try {
+            const response = await createInstance().read('/user');
+
+            setUser(response.data.map(item => ({ ...item, key: item._id })));
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
+    };
+
+    const createUser = async values => {
+        try {
+            const response = await createInstance().create('/user', values);
+
+            setModalSuccess({ open: true, message: response?.data?.message });
+
+            setModalMain({ open: false });
+
+            readUser();
+        } catch (error) {
+            console.log(error);
+            setModalError({ open: true, error });
+        }
+    };
+
+    const updateUser = async values => {
+        try {
+            const response = await createInstance().update(`/user/${values._id}`, values);
+
+            setModalMain({ open: false });
+
+            setModalSuccess({ open: true, message: response?.data?.message });
+
+            readUser();
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
+    };
+
+    const removeUser = async id => {
+        try {
+            const response = await createInstance().remove(`/user/${id}`);
+
+            setModalSuccess({ open: true, message: response?.data?.message });
+
+            setModalConfirm({ open: false });
+
+            readUser();
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
     const onFinish = values => {
-        // Xử lý khi hoàn thành biểu mẫu, kiểm tra và gọi các hàm cập nhật hoặc thêm mới dữ liệu
-        values.id
-            ? handleUpdateData({ ...values, birthday: dayjs(values.birthday).format('YYYY-MM-DD') })
-            : handleInsertData({
+        values._id
+            ? updateUser({ ...values, birthday: dayjs(values.birthday).format('DD/MM/YYYY') })
+            : createUser({
                   ...values,
-                  birthday: dayjs(values.birthday).format('YYYY-MM-DD'),
+                  birthday: dayjs(values.birthday).format('DD/MM/YYYY'),
               });
     };
 
-    // Các cột trong bảng dữ liệu
     const columns = [
         {
-            title: '#',
-            dataIndex: 'id',
-            key: 'id',
-            sorter: (a, b) => a.id - b.id,
+            dataIndex: '_id',
+            key: '_id',
+            render: (_, record) => (
+                <DropdownComponent
+                    actionDelete={() =>
+                        setModalConfirm({
+                            onOk: () => removeUser(record._id),
+                            open: true,
+                            message: (
+                                <Space direction="vertical" align="center">
+                                    Bạn có chắc muốn xóa nhân viên?
+                                    <b>{record.name}</b>
+                                    khỏi CSDL không?
+                                    <Alert
+                                        message="Thao tác này không thể hoàn tác!"
+                                        type="danger"
+                                        style={{
+                                            backgroundColor: '#ff4d4f',
+                                            color: 'white',
+                                        }}
+                                    />
+                                </Space>
+                            ),
+                        })
+                    }
+                    actionEdit={() => {
+                        form.setFieldsValue({
+                            ...record,
+                            birthday: dayjs(record.birthday, 'DD/MM/YYYY'),
+                        });
+                        setModalMain({ open: true, title: 'SỬA NHÂN VIÊN' });
+                    }}
+                />
+            ),
         },
         {
             title: 'Code',
@@ -143,7 +199,6 @@ const UserPage = () => {
             title: 'Birthday',
             dataIndex: 'birthday',
             key: 'birthday',
-            render: record => <Text ellipsis>{dayjs(record).format('YYYY-MM-DD')}</Text>,
         },
         {
             title: 'Gender',
@@ -163,9 +218,9 @@ const UserPage = () => {
         },
         {
             title: 'Pass',
-            dataIndex: 'pass',
-            key: 'pass',
-            sorter: (a, b) => a.pass.length - b.pass.length,
+            dataIndex: 'password',
+            key: 'password',
+            sorter: (a, b) => a.password.length - b.password.length,
         },
         {
             title: 'Role',
@@ -187,7 +242,7 @@ const UserPage = () => {
                             : 'blue'
                     }
                 >
-                    {role.find(item => item.id === record)?.name}
+                    {role.find(item => item._id === record)?.name}
                 </Tag>
             ),
         },
@@ -198,7 +253,7 @@ const UserPage = () => {
             sorter: (a, b) => a.departmentId - b.departmentId,
             render: record => (
                 <Tag color={record === 1 ? 'cyan' : record === 2 ? 'purple' : 'blue'}>
-                    {department.find(item => item.id === record)?.name}
+                    {department.find(item => item._id === record)?.name}
                 </Tag>
             ),
         },
@@ -207,29 +262,10 @@ const UserPage = () => {
             dataIndex: 'createdDate',
             key: 'createdDate',
             ellipsis: true,
-        },
-        {
-            title: 'Action',
-            dataIndex: 'action',
-            key: 'action',
-            render: (_, record) => (
-                <DropdownComponent
-                    actionDelete={() => handleDeleteData(record.id)}
-                    actionEdit={() => {
-                        form.setFieldsValue({
-                            ...record,
-                            birthday: dayjs(record.birthday),
-                        });
-                        setModalTitle('SỬA NHÂN VIÊN');
-                        handleModal();
-                    }}
-                    textDelete={record.name}
-                />
-            ),
+            render: record => dayjs(record).format('DD/MM/YYYY HH:mm'),
         },
     ];
 
-    // Các trường trong biểu mẫu
     const formFields = [
         {
             label: 'Mã nhân viên',
@@ -278,7 +314,7 @@ const UserPage = () => {
             typeInput: (
                 <Select allowClear placeholder="Chọn bộ phận">
                     {department.map(item => (
-                        <Select.Option key={item.id} value={item.id}>
+                        <Select.Option key={item._id} value={item._id}>
                             {item.name}
                         </Select.Option>
                     ))}
@@ -292,7 +328,7 @@ const UserPage = () => {
             typeInput: (
                 <Select allowClear placeholder="Chọn chức vụ">
                     {role.map(item => (
-                        <Select.Option key={item.id} value={item.id}>
+                        <Select.Option key={item._id} value={item._id}>
                             {item.name}
                         </Select.Option>
                     ))}
@@ -312,42 +348,51 @@ const UserPage = () => {
             name: 'numberPhone',
             rules: [{ required: true, message: 'Vui lòng nhập số điện thoại' }],
             typeInput: (
-                <Input allowClear maxLength={11} placeholder="Nhập số điện thoại" showCount />
+                <Input allowClear maxLength={10} placeholder="Nhập số điện thoại" showCount />
             ),
         },
     ];
 
-    // Trả về giao diện
     return (
         <>
-            {/* Component hiển thị nội dung */}
             <ContentComponent items={itemsOfBreadcrumb} loading={false}>
                 <CardComponent
                     actionFunc={() => {
-                        setModalTitle('THÊM NHÂN VIÊN');
-                        handleModal();
+                        setModalMain({ open: true, title: 'THÊM NHÂN VIÊN' });
                     }}
                     title="NHÂN VIÊN"
                 >
-                    <TableComponent columns={columns} dataSource={dataSource} />
+                    <TableComponent columns={columns} dataSource={user} />
                 </CardComponent>
             </ContentComponent>
-            {/* Component hiển thị hộp thoại modal */}
+
             <ModalComponent
-                // Xử lý sau khi đóng modal
                 afterClose={() => form.resetFields()}
-                // Xử lý khi nhấn nút Hủy
-                onCancel={handleModal}
-                // Xử lý khi nhấn nút OK
+                onCancel={() => setModalMain({ open: false })}
                 onOk={() => form.submit()}
-                // Trạng thái mở hoặc đóng của modal
-                open={modalOpen}
-                renderChildren={() => (
-                    // Component biểu mẫu
-                    <FormComponent form={form} formFields={formFields} onFinish={onFinish} />
-                )}
-                // Tiêu đề của modal
-                title={modalTitle}
+                open={modalMain.open}
+                title={modalMain.title}
+            >
+                <FormComponent form={form} formFields={formFields} onFinish={onFinish} />
+            </ModalComponent>
+
+            <ModalConfirmComponent
+                onCancel={() => setModalConfirm({ open: false })}
+                onOk={modalConfirm.onOk}
+                open={modalConfirm.open}
+                message={modalConfirm.message}
+            />
+
+            <ModalErrorComponent
+                onOk={() => setModalError({ open: false })}
+                open={modalError.open}
+                error={modalError.error}
+            />
+
+            <ModalSuccessComponent
+                onOk={() => setModalSuccess({ open: false })}
+                open={modalSuccess.open}
+                message={modalSuccess.message}
             />
         </>
     );

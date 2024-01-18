@@ -13,7 +13,7 @@ import { PencilFill, ThreeDotsVertical, Trash3Fill } from 'react-bootstrap-icons
 // Destructuring component Text từ Typography
 const { Text } = Typography;
 
-const DropdownComponent = ({ actionDelete, actionEdit, textDelete }) => (
+const DropdownComponent = ({ actionDelete, actionEdit }) => (
     <Dropdown
         arrow={true}
         menu={{
@@ -28,22 +28,7 @@ const DropdownComponent = ({ actionDelete, actionEdit, textDelete }) => (
                     key: '3',
                     label: <Text type={'danger'}>Delete</Text>,
                     icon: <Trash3Fill color="red" />,
-                    onClick: () =>
-                        Modal.confirm({
-                            centered: true,
-                            content: (
-                                <Text>
-                                    Bạn có chắc muốn xóa <Text strong>{textDelete}</Text> không?
-                                    <br />
-                                    Thao tác này không thể hoàn tác!
-                                </Text>
-                            ),
-                            icon: <ExclamationCircleFilled />,
-                            okText: 'Delete',
-                            okType: 'danger',
-                            onOk: actionDelete,
-                            title: 'VUI LÒNG XÁC NHẬN',
-                        }),
+                    onClick: actionDelete,
                 },
             ],
         }}

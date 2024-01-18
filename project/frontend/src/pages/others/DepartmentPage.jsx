@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-
-import { Form, Input } from 'antd';
+import { Alert, Form, Input, Space } from 'antd';
+import dayjs from 'dayjs';
 
 import {
     CardComponent,
@@ -8,12 +8,13 @@ import {
     DropdownComponent,
     FormComponent,
     ModalComponent,
+    ModalConfirmComponent,
+    ModalErrorComponent,
     ModalSuccessComponent,
     TableComponent,
-} from '../../components/index';
+} from '../../components';
 
 import { createInstance } from '../../utils';
-import dayjs from 'dayjs';
 
 const itemsOfBreadcrumb = [{ title: '' }, { title: 'Others' }, { title: 'Department' }];
 
@@ -35,11 +36,22 @@ const formFields = [
 const DepartmentPage = () => {
     console.log('Run DepartmentPage....');
 
-    const [dataSource, setDataSource] = useState([]);
+    const [department, setDepartment] = useState([]);
 
     const [modalMain, setModalMain] = useState({
         open: false,
         title: '',
+    });
+
+    const [modalConfirm, setModalConfirm] = useState({
+        onOk: () => {},
+        open: false,
+        message: '',
+    });
+
+    const [modalError, setModalError] = useState({
+        open: false,
+        error: '',
     });
 
     const [modalSuccess, setModalSuccess] = useState({
@@ -50,68 +62,107 @@ const DepartmentPage = () => {
     const [form] = Form.useForm();
 
     useEffect(() => {
-        console.log('Run useEffect');
-
-        getDepartment();
+        readDepartment();
     }, []);
 
-    const getDepartment = async () => {
+    const readDepartment = async () => {
         try {
             const response = await createInstance().read('/department');
 
-            setDataSource(response.data.map(item => ({ ...item, key: item._id })));
+            setDepartment(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
-            console.log(error);
+            setModalError({ open: true, error });
         }
     };
 
-    const insertDepartment = async values => {
+    const createDepartment = async values => {
         try {
             const response = await createInstance().create('/department', values);
 
             setModalSuccess({ open: true, message: response?.data?.message });
+
+            setModalMain({ open: false });
+
+            readDepartment();
         } catch (error) {
-            console.log(error);
+            setModalError({ open: true, error });
         }
     };
 
     const updateDepartment = async values => {
-        const response = await createInstance().update('/department', values);
-        console.log(response.data);
+        try {
+            const response = await createInstance().update(`/department/${values._id}`, values);
+
+            setModalMain({ open: false });
+
+            setModalSuccess({ open: true, message: response?.data?.message });
+
+            readDepartment();
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
-    const deleteDepartment = async id => {
-        const response = await createInstance().remove('/department', id);
-        console.log(response.data);
+    const removeDepartment = async id => {
+        try {
+            const response = await createInstance().remove(`/department/${id}`);
+
+            setModalSuccess({ open: true, message: response?.data?.message });
+
+            setModalConfirm({ open: false });
+
+            readDepartment();
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
     const onFinish = values => {
-        values.id ? updateDepartment(values) : insertDepartment(values);
+        values._id ? updateDepartment(values) : createDepartment(values);
     };
 
     const columns = [
         {
-            dataIndex: 'action',
-            key: 'action',
+            dataIndex: '_id',
+            key: '_id',
             render: (_, record) => (
                 <DropdownComponent
-                    actionDelete={() => deleteDepartment(record.id)}
+                    actionDelete={() =>
+                        setModalConfirm({
+                            onOk: () => removeDepartment(record._id),
+                            open: true,
+                            message: (
+                                <Space direction="vertical" align="center">
+                                    Bạn có chắc muốn xóa bộ phận?
+                                    <b>{record.name}</b>
+                                    khỏi CSDL không?
+                                    <Alert
+                                        message="Thao tác này không thể hoàn tác!"
+                                        type="danger"
+                                        style={{
+                                            backgroundColor: '#ff4d4f',
+                                            color: 'white',
+                                        }}
+                                    />
+                                </Space>
+                            ),
+                        })
+                    }
                     actionEdit={() => {
                         form.setFieldsValue(record);
                         setModalMain({ open: true, title: 'SỬA BỘ PHẬN' });
                     }}
-                    textDelete={record.name}
                 />
             ),
         },
         {
-            title: 'Mã',
+            title: 'Mã bộ phận',
             dataIndex: 'code',
             key: 'code',
             sorter: (a, b) => a.code.length - b.code.length,
         },
         {
-            title: 'Tên',
+            title: 'Tên bộ phận',
             dataIndex: 'name',
             key: 'name',
             sorter: (a, b) => a.name.length - b.name.length,
@@ -121,7 +172,7 @@ const DepartmentPage = () => {
             dataIndex: 'createdDate',
             key: 'createdDate',
             ellipsis: true,
-            render: record => dayjs(record).format('DD/MM/YYYY'),
+            render: record => dayjs(record).format('DD/MM/YYYY HH:mm'),
         },
     ];
 
@@ -132,9 +183,9 @@ const DepartmentPage = () => {
                     actionFunc={() => {
                         setModalMain({ open: true, title: 'THÊM BỘ PHẬN' });
                     }}
-                    title="PHÒNG BAN"
+                    title="BỘ PHẬN"
                 >
-                    <TableComponent columns={columns} dataSource={dataSource} />
+                    <TableComponent columns={columns} dataSource={department} />
                 </CardComponent>
             </ContentComponent>
 
@@ -147,6 +198,19 @@ const DepartmentPage = () => {
             >
                 <FormComponent form={form} formFields={formFields} onFinish={onFinish} />
             </ModalComponent>
+
+            <ModalConfirmComponent
+                onCancel={() => setModalConfirm({ open: false })}
+                onOk={modalConfirm.onOk}
+                open={modalConfirm.open}
+                message={modalConfirm.message}
+            />
+
+            <ModalErrorComponent
+                onOk={() => setModalError({ open: false })}
+                open={modalError.open}
+                error={modalError.error}
+            />
 
             <ModalSuccessComponent
                 onOk={() => setModalSuccess({ open: false })}

@@ -1,27 +1,19 @@
 const Role = require('../models/roleModel');
 
 const roleService = {
-    createRole: async roleData => {
-        const role = new Role(roleData);
+    createRole: async roleData => await new Role(roleData).save(),
 
-        return await role.save();
-    },
+    readAllRole: async () => await Role.find(),
 
-    readAllRole: async () => {
-        return await Role.find();
-    },
-
-    readRoleById: async id => {
-        return await Role.findById(id);
-    },
+    readRoleById: async id => await Role.findById(id),
 
     updateRole: async (id, roleData) => {
+        roleData.updatedDate = new Date();
+
         return await Role.findByIdAndUpdate(id, roleData, { new: true });
     },
 
-    deleteRole: async id => {
-        return await Role.findByIdAndDelete(id);
-    },
+    deleteRole: async id => await Role.findByIdAndDelete(id),
 };
 
 module.exports = roleService;
