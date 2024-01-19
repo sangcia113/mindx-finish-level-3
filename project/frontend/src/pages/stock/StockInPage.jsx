@@ -1,223 +1,258 @@
-// Import React và hooks từ thư viện React
 import React, { useEffect, useState } from 'react';
+import { Alert, Form, Input, InputNumber, Select, Space, Typography } from 'antd';
+import dayjs from 'dayjs';
 
-// Import các component cụ thể từ thư viện antd
-import { Form, Input, InputNumber, Select, Typography } from 'antd';
-
-// Import các component tùy chỉnh từ đường dẫn tương đối
 import {
     CardComponent,
     ContentComponent,
     DropdownComponent,
     FormComponent,
     ModalComponent,
+    ModalConfirmComponent,
+    ModalErrorComponent,
+    ModalSuccessComponent,
     TableComponent,
-} from '../../components/index';
+} from '../../components';
 
-// Import hàm xử lý thông báo từ file API cụ thể
-import { handleNotification } from '../../handleAPI/handleNotification';
+import { createInstance } from '../../utils';
 
-// Import các hàm xử lý thao tác dữ liệu từ file API cụ thể
-import { deleteData, getData, postData, putData } from '../../handleAPI/api';
-
-// Destructuring component Text từ Typography
+const itemsOfBreadcrumb = [{ title: '' }, { title: 'Stock' }, { title: 'In' }];
 const { Text } = Typography;
 
-// Mảng chứa các item breadcrumb
-const itemsOfBreadcrumb = [{ title: '' }, { title: 'Stock' }, { title: 'In' }];
-
-// Lưu trữ table
-const table = 'stock-in';
-
-// Hàm thêm dấu phẩy ngăn cách phần nghìn
 const addSeperator = values => `${values}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
 const StockInPage = () => {
-    // Ghi log ra console khi component StockInPage được chạy
     console.log('Run StockInPage....');
 
-    // Khởi tạo biến state sử dụng hook useState
-    const [dataSource, setDataSource] = useState([]);
+    const [stockIn, setStockIn] = useState([]);
 
-    // Khởi tạo biến state sử dụng hook useState
-    const [modalOpen, setModalOpen] = useState(false);
-
-    // Khởi tạo biến state sử dụng hook useState
-    const [modalTitle, setModalTitle] = useState('');
-
-    // Set ingredient cho thẻ Select
     const [ingredient, setIngredient] = useState([]);
 
-    // Set unit cho thẻ Select
     const [unit, setUnit] = useState([]);
 
-    // Set supplier cho thẻ Select
     const [supplier, setSupplier] = useState([]);
 
-    // Khởi tạo đối tượng form sử dụng hook useForm của Form
+    const [modalMain, setModalMain] = useState({
+        open: false,
+        title: '',
+    });
+
+    const [modalConfirm, setModalConfirm] = useState({
+        onOk: () => {},
+        open: false,
+        message: '',
+    });
+
+    const [modalError, setModalError] = useState({
+        open: false,
+        error: '',
+    });
+
+    const [modalSuccess, setModalSuccess] = useState({
+        open: false,
+        message: '',
+    });
+
     const [form] = Form.useForm();
 
     useEffect(() => {
-        // Ghi log ra console khi hook useEffect được kích hoạt
         console.log('Run useEffect');
 
-        // Lấy dữ liệu ban đầu khi component được gắn
-        handleGetData();
-        handleGetDataIngredient();
-        handleGetDataUnit();
-        handleGetDataSupplier();
+        readStockIn();
+        readIngredient();
+        readUnit();
+        readSupplier();
     }, []);
 
-    // Chuyển đổi trạng thái modalOpen giữa true và false
-    const handleModal = () => setModalOpen(prevModalOpen => !prevModalOpen);
-
-    // Hàm lấy Name Unit
     const handleGetUnit = ingredientId =>
-        unit.find(item => item.id === ingredient.find(item => item.id === ingredientId)?.unitId)
-            ?.name;
+        unit.find(item => item._id === ingredient.find(item => item._id === ingredientId)?.unitId)
+            ?.code;
 
-    // Hàm tính tổng tiền
-    const calculatorTotal = () =>
-        form.getFieldValue('importQuantity') * form.getFieldValue('price');
+    const calculatorTotal = () => form.getFieldValue('quantity') * form.getFieldValue('price');
 
-    const handleGetDataIngredient = async () => {
-        // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const data = await getData('ingredient');
-        setIngredient(data);
+    const readIngredient = async () => {
+        try {
+            const response = await createInstance().read('/ingredient/list');
+
+            setIngredient(response.data.map(item => ({ ...item, key: item._id })));
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
-    const handleGetDataUnit = async () => {
-        // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const data = await getData('unit');
-        setUnit(data);
+    const readUnit = async () => {
+        try {
+            const response = await createInstance().read('/unit');
+
+            setUnit(response.data.map(item => ({ ...item, key: item._id })));
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
-    const handleGetDataSupplier = async () => {
-        // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const data = await getData('supplier');
-        setSupplier(data);
+    const readSupplier = async () => {
+        try {
+            const response = await createInstance().read('/supplier');
+
+            setSupplier(response.data.map(item => ({ ...item, key: item._id })));
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
-    const handleGetData = async () => {
-        // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const data = await getData(table);
-        setDataSource(data);
+    const readStockIn = async () => {
+        try {
+            const response = await createInstance().read('/stock/in');
+
+            setStockIn(response.data.map(item => ({ ...item, key: item._id })));
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
-    const handleInsertData = async values => {
-        // Thêm dữ liệu mới thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        const response = await postData(table, values);
-        handleModal();
-        handleNotification(response, handleGetData);
+    const createStockIn = async values => {
+        try {
+            const response = await createInstance().create('/stock/in', values);
+
+            setModalSuccess({ open: true, message: response?.data?.message });
+
+            setModalMain({ open: false });
+
+            readStockIn();
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
-    const handleUpdateData = async values => {
-        // Cập nhật dữ liệu thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        const response = await putData(table, values.id, values);
-        handleModal();
-        handleNotification(response, handleGetData);
+    const updateStockIn = async values => {
+        try {
+            const response = await createInstance().update(`/stock/in/${values._id}`, values);
+
+            setModalMain({ open: false });
+
+            setModalSuccess({ open: true, message: response?.data?.message });
+
+            readStockIn();
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
-    const handleDeleteData = async id => {
-        // Xóa dữ liệu thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        const response = await deleteData(table, id);
-        handleNotification(response, handleGetData);
+    const removeStockIn = async id => {
+        try {
+            const response = await createInstance().remove(`/stock/in/${id}`);
+
+            setModalSuccess({ open: true, message: response?.data?.message });
+
+            setModalConfirm({ open: false });
+
+            readStockIn();
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
     const onFinish = values => {
-        // Xử lý khi hoàn thành biểu mẫu, kiểm tra và gọi các hàm cập nhật hoặc thêm mới dữ liệu
-        values.id ? handleUpdateData(values) : handleInsertData(values);
+        values._id ? updateStockIn(values) : createStockIn(values);
     };
 
-    // Các cột trong bảng dữ liệu
     const columns = [
         {
-            title: '#',
-            dataIndex: 'id',
-            key: 'id',
-            sorter: (a, b) => a.id - b.id,
-        },
-        {
-            title: 'Ingredient',
-            dataIndex: 'ingredientId',
-            key: 'ingredientId',
-            sorter: (a, b) => a.ingredientId - b.ingredientId,
-            render: record => (
-                <Text strong>{ingredient.find(item => item.id === record)?.name}</Text>
-            ),
-        },
-        {
-            title: 'Unit',
-            dataIndex: 'unitId',
-            key: 'unitId',
-            render: (_, record) => {
-                return handleGetUnit(record.ingredientId);
-            },
-        },
-        {
-            title: 'Quantity',
-            dataIndex: 'importQuantity',
-            key: 'importQuantity',
-            sorter: (a, b) => a.importQuantity - b.importQuantity,
-            render: record => addSeperator(record),
-        },
-        {
-            title: 'Price',
-            dataIndex: 'price',
-            key: 'price',
-            sorter: (a, b) => a.price - b.price,
-            render: record => addSeperator(record),
-        },
-        {
-            title: 'Total',
-            dataIndex: 'total',
-            key: 'total',
-            ellipsis: true,
-            render: (_, record) => (
-                <Text strong>{addSeperator(record.importQuantity * record.price)}</Text>
-            ),
-        },
-        {
-            title: 'Supplier',
-            dataIndex: 'supplierId',
-            key: 'supplierId',
-            ellipsis: true,
-            sorter: (a, b) => a.supplierId - b.supplierId,
-            render: record => supplier.find(item => item.id === record)?.name,
-        },
-        {
-            title: 'Created Date',
-            dataIndex: 'createdDate',
-            key: 'createdDate',
-            ellipsis: true,
-        },
-        {
-            title: 'Action',
-            dataIndex: 'action',
-            key: 'action',
+            dataIndex: '_id',
+            key: '_id',
             render: (_, record) => (
                 <DropdownComponent
-                    actionDelete={() => handleDeleteData(record.id)}
+                    actionDelete={() =>
+                        setModalConfirm({
+                            onOk: () => removeStockIn(record._id),
+                            open: true,
+                            message: (
+                                <Space direction="vertical" align="center">
+                                    Bạn có chắc muốn xóa nhập kho?
+                                    <b>{record.name}</b>
+                                    khỏi CSDL không?
+                                    <Alert
+                                        message="Thao tác này không thể hoàn tác!"
+                                        type="danger"
+                                        style={{
+                                            backgroundColor: '#ff4d4f',
+                                            color: 'white',
+                                        }}
+                                    />
+                                </Space>
+                            ),
+                        })
+                    }
                     actionEdit={() => {
                         form.setFieldsValue({
                             ...record,
                             unit: handleGetUnit(record.ingredientId),
-                            total: record.importQuantity * record.price,
+                            total: addSeperator(record.quantity * record.price),
                         });
-                        setModalTitle('SỬA NHẬP KHO');
-                        handleModal();
+                        setModalMain({ open: true, title: 'SỬA NHẬP KHO' });
                     }}
-                    textDelete={
-                        <Text strong>
-                            {ingredient.find(item => item.id === record.ingredientId)?.name}
-                        </Text>
-                    }
                 />
             ),
         },
+        {
+            title: 'Nguyên liệu',
+            dataIndex: 'ingredientId',
+            key: 'ingredientId',
+            ellipsis: true,
+            sorter: (a, b) => a.ingredientId - b.ingredientId,
+            render: record => (
+                <Text strong>{ingredient.find(item => item._id === record)?.name}</Text>
+            ),
+        },
+        {
+            title: 'DVT',
+            dataIndex: 'unit',
+            key: 'unit',
+            ellipsis: true,
+            render: (_, record) => handleGetUnit(record.ingredientId),
+        },
+        {
+            title: 'Số lượng',
+            dataIndex: 'quantity',
+            key: 'quantity',
+            ellipsis: true,
+            sorter: (a, b) => a.quantity - b.quantity,
+            render: record => addSeperator(record),
+        },
+        {
+            title: 'Đơn giá',
+            dataIndex: 'price',
+            key: 'price',
+            ellipsis: true,
+            sorter: (a, b) => a.price - b.price,
+            render: record => addSeperator(record),
+        },
+        {
+            title: 'Thành tiền',
+            dataIndex: 'total',
+            key: 'total',
+            ellipsis: true,
+            render: (_, record) => (
+                <Text strong>{addSeperator(record.quantity * record.price)}</Text>
+            ),
+        },
+        {
+            title: 'NCC',
+            dataIndex: 'supplierId',
+            key: 'supplierId',
+            ellipsis: true,
+            sorter: (a, b) => a.supplierId - b.supplierId,
+            render: record => supplier.find(item => item._id === record)?.name,
+        },
+        {
+            title: 'Ngày tạo',
+            dataIndex: 'createdDate',
+            key: 'createdDate',
+            ellipsis: true,
+            render: record => dayjs(record).format('DD/MM/YYYY HH:mm'),
+        },
     ];
 
-    // Các trường trong biểu mẫu
     const formFields = [
         {
             label: 'Nguyên liệu',
@@ -226,7 +261,7 @@ const StockInPage = () => {
             typeInput: (
                 <Select allowClear onChange={e => form.setFieldValue('unit', handleGetUnit(e))}>
                     {ingredient.map(item => (
-                        <Select.Option key={item.id} value={item.id}>
+                        <Select.Option key={item._id} value={item._id}>
                             {item.name}
                         </Select.Option>
                     ))}
@@ -241,7 +276,7 @@ const StockInPage = () => {
         },
         {
             label: 'Số lượng',
-            name: 'importQuantity',
+            name: 'quantity',
             rules: [{ required: true, message: 'Vui lòng nhập số lượng' }],
             typeInput: (
                 <InputNumber
@@ -292,7 +327,7 @@ const StockInPage = () => {
             typeInput: (
                 <Select allowClear>
                     {supplier.map(item => (
-                        <Select.Option key={item.id} value={item.id}>
+                        <Select.Option key={item._id} value={item._id}>
                             {item.name}
                         </Select.Option>
                     ))}
@@ -301,44 +336,46 @@ const StockInPage = () => {
         },
     ];
 
-    // Trả về giao diện
     return (
         <>
-            {/* Component hiển thị nội dung */}
-            <ContentComponent
-                // Các mục trong breadcrumb
-                items={itemsOfBreadcrumb}
-                renderChildren={() => (
-                    // Component thẻ card
-                    <CardComponent
-                        actionFunc={() => {
-                            setModalTitle('THÊM NHẬP KHO');
-                            handleModal();
-                        }}
-                        renderChildren={() => (
-                            // Component bảng dữ liệu
-                            <TableComponent columns={columns} dataSource={dataSource} />
-                        )}
-                        title="NHẬP KHO"
-                    />
-                )}
-            />
-            {/* Component hiển thị hộp thoại modal */}
+            <ContentComponent items={itemsOfBreadcrumb} loading={false}>
+                <CardComponent
+                    actionFunc={() => {
+                        setModalMain({ open: true, title: 'THÊM NHẬP KHO' });
+                    }}
+                    title="NHẬP KHO"
+                >
+                    <TableComponent columns={columns} dataSource={stockIn} />
+                </CardComponent>
+            </ContentComponent>
+
             <ModalComponent
-                // Xử lý sau khi đóng modal
                 afterClose={() => form.resetFields()}
-                // Xử lý khi nhấn nút Hủy
-                onCancel={handleModal}
-                // Xử lý khi nhấn nút OK
+                onCancel={() => setModalMain({ open: false })}
                 onOk={() => form.submit()}
-                // Trạng thái mở hoặc đóng của modal
-                open={modalOpen}
-                renderChildren={() => (
-                    // Component biểu mẫu
-                    <FormComponent form={form} formFields={formFields} onFinish={onFinish} />
-                )}
-                // Tiêu đề của modal
-                title={modalTitle}
+                open={modalMain.open}
+                title={modalMain.title}
+            >
+                <FormComponent form={form} formFields={formFields} onFinish={onFinish} />
+            </ModalComponent>
+
+            <ModalConfirmComponent
+                onCancel={() => setModalConfirm({ open: false })}
+                onOk={modalConfirm.onOk}
+                open={modalConfirm.open}
+                message={modalConfirm.message}
+            />
+
+            <ModalErrorComponent
+                onOk={() => setModalError({ open: false })}
+                open={modalError.open}
+                error={modalError.error}
+            />
+
+            <ModalSuccessComponent
+                onOk={() => setModalSuccess({ open: false })}
+                open={modalSuccess.open}
+                message={modalSuccess.message}
             />
         </>
     );

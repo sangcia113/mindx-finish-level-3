@@ -179,15 +179,17 @@ const UserPage = () => {
             ),
         },
         {
-            title: 'Code',
+            title: 'Mã nhân viên',
             dataIndex: 'code',
             key: 'code',
+            ellipsis: true,
             sorter: (a, b) => a.code.length - b.code.length,
         },
         {
-            title: 'Name',
+            title: 'Tên nhân viên',
             dataIndex: 'name',
             key: 'name',
+            ellipsis: true,
             sorter: (a, b) => a.name.length - b.name.length,
             render: record => (
                 <Text strong ellipsis>
@@ -196,34 +198,36 @@ const UserPage = () => {
             ),
         },
         {
-            title: 'Birthday',
+            title: 'Ngày sinh',
             dataIndex: 'birthday',
             key: 'birthday',
+            ellipsis: true,
         },
         {
-            title: 'Gender',
+            title: 'Giới tính',
             dataIndex: 'gender',
             key: 'gender',
+            ellipsis: true,
             sorter: (a, b) => a.gender - b.gender,
             render: record => (
                 <Tag color={record === 0 ? 'pink' : 'green'}>{record === 0 ? 'Nữ' : 'Nam'}</Tag>
             ),
         },
         {
-            title: 'Number Phone',
+            title: 'Số điện thoại',
             dataIndex: 'numberPhone',
             key: 'numberPhone',
             ellipsis: true,
             sorter: (a, b) => a.numberPhone - b.numberPhone,
         },
         {
-            title: 'Pass',
+            title: 'Mật khẩu',
             dataIndex: 'password',
             key: 'password',
             sorter: (a, b) => a.password.length - b.password.length,
         },
         {
-            title: 'Role',
+            title: 'Phân quyền',
             dataIndex: 'roleId',
             key: 'roleId',
             ellipsis: true,
@@ -247,9 +251,10 @@ const UserPage = () => {
             ),
         },
         {
-            title: 'Department',
+            title: 'Bộ phận',
             dataIndex: 'departmentId',
             key: 'departmentId',
+            ellipsis: true,
             sorter: (a, b) => a.departmentId - b.departmentId,
             render: record => (
                 <Tag color={record === 1 ? 'cyan' : record === 2 ? 'purple' : 'blue'}>
@@ -258,7 +263,7 @@ const UserPage = () => {
             ),
         },
         {
-            title: 'Created Date',
+            title: 'Ngày tạo',
             dataIndex: 'createdDate',
             key: 'createdDate',
             ellipsis: true,

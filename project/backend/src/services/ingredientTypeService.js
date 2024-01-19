@@ -1,27 +1,20 @@
 const IngredientType = require('../models/ingredientTypeModel');
 
 const ingredientTypeService = {
-    createIngredientType: async ingredientTypeData => {
-        const ingredientType = new IngredientType(ingredientTypeData);
+    createIngredientType: async ingredientTypeData =>
+        await new IngredientType(ingredientTypeData).save(),
 
-        return await ingredientType.save();
-    },
+    readAllIngredientType: async () => await IngredientType.find(),
 
-    readAllIngredientType: async () => {
-        return await IngredientType.find();
-    },
-
-    readIngredientTypeById: async id => {
-        return await IngredientType.findById(id);
-    },
+    readIngredientTypeById: async id => await IngredientType.findById(id),
 
     updateIngredientType: async (id, ingredientTypeData) => {
+        ingredientTypeData.updatedDate = new Date();
+
         return await IngredientType.findByIdAndUpdate(id, ingredientTypeData, { new: true });
     },
 
-    deleteIngredientType: async id => {
-        return await IngredientType.findByIdAndDelete(id);
-    },
+    deleteIngredientType: async id => await IngredientType.findByIdAndDelete(id),
 };
 
 module.exports = ingredientTypeService;

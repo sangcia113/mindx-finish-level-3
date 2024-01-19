@@ -1,8 +1,6 @@
-// Import React và hooks từ thư viện React
 import React, { useEffect, useState } from 'react';
-
-// Import các component cụ thể từ thư viện antd
 import {
+    Alert,
     Button,
     Col,
     DatePicker,
@@ -11,49 +9,35 @@ import {
     InputNumber,
     Row,
     Select,
+    Space,
     Table,
     Tag,
     Typography,
 } from 'antd';
-
-// Import các biểu tượng cụ thể từ thư viện react-bootstrap-icons
-import { PersonFill } from 'react-bootstrap-icons';
-
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
-
-// Import hàm dayjs
+import { PersonFill } from 'react-bootstrap-icons';
 import dayjs from 'dayjs';
 
-// Import các component tùy chỉnh từ đường dẫn tương đối
 import {
     CardComponent,
     ContentComponent,
     DropdownComponent,
     ModalComponent,
+    ModalConfirmComponent,
+    ModalErrorComponent,
+    ModalSuccessComponent,
     TableComponent,
-} from '../components/index';
+} from '../components';
 
-// Import hàm xử lý thông báo từ file API cụ thể
-import { handleNotification } from '../handleAPI/handleNotification';
+import { createInstance } from '../utils';
 
-// Import các hàm xử lý thao tác dữ liệu từ file API cụ thể
-import { deleteData, getData, getDataById, postData, putData } from '../handleAPI/api';
-
-// Destructuring component Text từ Typography
-const { Text } = Typography;
-
-// Mảng chứa các item breadcrumb
 const itemsOfBreadcrumb = [{ title: '' }, { title: 'Menu' }, { title: 'List' }];
-
-// Lưu trữ table
-const table = 'menu';
+const { Text } = Typography;
 
 let previousDishName = null;
 
-// Hàm thêm dấu phẩy ngăn cách phần nghìn
 const addSeperator = values => `${values}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-// Hàm tình summary của table con
 const calculatorSummary = record => {
     return addSeperator(
         record
@@ -82,120 +66,177 @@ const calculatorCells = (record, data) => {
 };
 
 const MenuPage = () => {
-    // Ghi log ra console khi component MenuPage được chạy
     console.log('Run MenuPage....');
 
-    // Khởi tạo biến state sử dụng hook useState
-    const [dataSource, setDataSource] = useState([]);
+    const [menu, setMenu] = useState([]);
 
-    // Khởi tạo biến state sử dụng hook useState
-    const [modalOpen, setModalOpen] = useState(false);
-
-    // Khởi tạo biến state sử dụng hook useState
-    const [modalTitle, setModalTitle] = useState('');
-
-    // Set dish cho thẻ Select
     const [dish, setDish] = useState([]);
 
-    // Set data source cho thẻ table expander
-    const [dataSourceMenuDetail, setDataSourceMenuDetail] = useState([]);
+    const [menuDetail, setMenuDetail] = useState([]);
 
-    // Khởi tạo đối tượng form sử dụng hook useForm của Form
+    const [modalMain, setModalMain] = useState({
+        open: false,
+        title: '',
+    });
+
+    const [modalConfirm, setModalConfirm] = useState({
+        onOk: () => {},
+        open: false,
+        message: '',
+    });
+
+    const [modalError, setModalError] = useState({
+        open: false,
+        error: '',
+    });
+
+    const [modalSuccess, setModalSuccess] = useState({
+        open: false,
+        message: '',
+    });
+
     const [form] = Form.useForm();
 
     useEffect(() => {
-        // Ghi log ra console khi hook useEffect được kích hoạt
         console.log('Run useEffect');
 
-        // Lấy dữ liệu ban đầu khi component được gắn
-        handleGetData();
-        handleGetDataDish();
+        readDish();
+        readMenu();
     }, []);
-
-    // Chuyển đổi trạng thái modalOpen giữa true và false
-    const handleModal = () => setModalOpen(prevModalOpen => !prevModalOpen);
 
     const handleFillData = async id => {
         // Assume 'data' is the data received from the server
-        const data = await getDataById('menu-detail', id);
-
-        let result = data.reduce((acc, cur) => {
-            let menu = acc.find(menu => menu.id === cur.menuId);
-            if (!menu) {
-                menu = { id: cur.menuId, menuDate: dayjs(cur.menuDate), menuDetail: [] };
-                acc.push(menu);
-            }
-            let detail = menu.menuDetail.find(detail => detail.servingSize === cur.servingSize);
-            if (!detail) {
-                detail = { dishId: [], servingSize: cur.servingSize };
-                menu.menuDetail.push(detail);
-            }
-            !detail.dishId.includes(cur.dishId) && detail.dishId.push(cur.dishId);
-
-            return acc;
-        }, []);
-
-        return result;
+        // const data = await getDataById('menu-detail', id);
+        // let result = data.reduce((acc, cur) => {
+        //     let menu = acc.find(menu => menu.id === cur.menuId);
+        //     if (!menu) {
+        //         menu = { id: cur.menuId, menuDate: dayjs(cur.menuDate), menuDetail: [] };
+        //         acc.push(menu);
+        //     }
+        //     let detail = menu.menuDetail.find(detail => detail.servingSize === cur.servingSize);
+        //     if (!detail) {
+        //         detail = { dishId: [], servingSize: cur.servingSize };
+        //         menu.menuDetail.push(detail);
+        //     }
+        //     !detail.dishId.includes(cur.dishId) && detail.dishId.push(cur.dishId);
+        //     return acc;
+        // }, []);
+        // return result;
     };
 
-    const handleGetDataMenuDetail = async id => {
-        console.log('Run handleGetDataMenuDetail');
-        // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const data = await getDataById('menu-detail', id);
-        // Lấy dữ liệu từ API, giữ nguyên dữ liệu cũ và cập nhật dữ liệu mới vào hoặc ghi đè theo id
-        setDataSourceMenuDetail(prevState => ({ ...prevState, [id]: data }));
+    const readMenuDetail = async id => {
+        // console.log('Run readMenuDetail');
+        // // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
+        // const data = await getDataById('menu-detail', id);
+        // // Lấy dữ liệu từ API, giữ nguyên dữ liệu cũ và cập nhật dữ liệu mới vào hoặc ghi đè theo id
+        // setDataSourceMenuDetail(prevState => ({ ...prevState, [id]: data }));
     };
 
-    const handleGetDataDish = async () => {
-        console.log('Run handleGetDataDish');
-        // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const data = await getData('dish');
-        setDish(data);
+    const readDish = async () => {
+        try {
+            const response = await createInstance().read('/dish/list');
+
+            setDish(response.data.map(item => ({ ...item, key: item._id })));
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
-    const handleGetData = async () => {
-        console.log('Run handleGetData');
-        // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const data = await getData(table);
-        setDataSource(data);
+    const readMenu = async () => {
+        try {
+            const response = await createInstance().read('/list');
+
+            setMenu(response.data.map(item => ({ ...item, key: item._id })));
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
-    const handleInsertData = async values => {
-        console.log('Run handleInsertData');
-        // Thêm dữ liệu mới thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        const response = await postData(table, values);
-        handleModal();
-        handleNotification(response, handleGetData);
+    const createMenu = async values => {
+        try {
+            const response = await createInstance().create('/list', values);
+
+            setModalSuccess({ open: true, message: response?.data?.message });
+
+            setModalMain({ open: false });
+
+            readMenu();
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
-    const handleUpdateData = async values => {
-        console.log('Run handleUpdateData');
-        // Cập nhật dữ liệu thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        const response = await putData(table, values.id, values);
-        handleModal();
-        handleNotification(response, handleGetData);
+    const updateMenu = async values => {
+        try {
+            const response = await createInstance().update(`/list/${values._id}`, values);
+
+            setModalMain({ open: false });
+
+            setModalSuccess({ open: true, message: response?.data?.message });
+
+            readMenu();
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
-    const handleDeleteData = async id => {
-        console.log('Run handleDeleteData');
-        // Xóa dữ liệu thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        const response = await deleteData(table, id);
-        handleNotification(response, handleGetData);
+    const removeMenu = async id => {
+        try {
+            const response = await createInstance().remove(`/list/${id}`);
+
+            setModalSuccess({ open: true, message: response?.data?.message });
+
+            setModalConfirm({ open: false });
+
+            readMenu();
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
     const onFinish = values => {
-        console.log('Run onFinish');
-        // Xử lý khi hoàn thành biểu mẫu, kiểm tra và gọi các hàm cập nhật hoặc thêm mới dữ liệu
-        values.id
-            ? handleUpdateData({ ...values, menuDate: dayjs(values.menuDate).format('YYYY-MM-DD') })
-            : handleInsertData({
+        values._id
+            ? updateMenu({ ...values, menuDate: dayjs(values.menuDate).format('YYYY-MM-DD') })
+            : createMenu({
                   ...values,
                   menuDate: dayjs(values.menuDate).format('YYYY-MM-DD'),
               });
     };
 
-    // Các cột trong bảng dữ liệu
     const columns = [
+        {
+            dataIndex: '_id',
+            key: '_id',
+            render: (_, record) => (
+                <DropdownComponent
+                    actionDelete={() =>
+                        setModalConfirm({
+                            onOk: () => removeMenu(record._id),
+                            open: true,
+                            message: (
+                                <Space direction="vertical" align="center">
+                                    Bạn có chắc muốn xóa bộ phận?
+                                    <b>{record.name}</b>
+                                    khỏi CSDL không?
+                                    <Alert
+                                        message="Thao tác này không thể hoàn tác!"
+                                        type="danger"
+                                        style={{
+                                            backgroundColor: '#ff4d4f',
+                                            color: 'white',
+                                        }}
+                                    />
+                                </Space>
+                            ),
+                        })
+                    }
+                    actionEdit={() => {
+                        form.setFieldsValue(record);
+                        setModalMain({ open: true, title: 'SỬA BỘ PHẬN' });
+                    }}
+                />
+            ),
+        },
         {
             title: '#',
             dataIndex: 'id',
@@ -218,23 +259,6 @@ const MenuPage = () => {
             key: 'createdDate',
             ellipsis: true,
         },
-        {
-            title: 'Action',
-            dataIndex: 'action',
-            key: 'action',
-            render: (_, record) => (
-                <DropdownComponent
-                    actionDelete={() => handleDeleteData(record.id)}
-                    actionEdit={async () => {
-                        const data = await handleFillData(record.id);
-                        form.setFieldsValue(data[0]);
-                        setModalTitle('SỬA THỰC ĐƠN');
-                        handleModal();
-                    }}
-                    textDelete={dayjs(record.menuDate).format('YYYY-MM-DD')}
-                />
-            ),
-        },
     ];
 
     // Các cột trong bảng dữ liệu
@@ -244,7 +268,7 @@ const MenuPage = () => {
             dataIndex: 'dishName',
             key: 'dishName',
             ellipsis: true,
-            onCell: (record, index) => calculatorCells(record, dataSourceMenuDetail),
+            onCell: (record, index) => calculatorCells(record, menuDetail),
         },
         {
             title: 'Nguyên liệu',
@@ -295,152 +319,160 @@ const MenuPage = () => {
 
     return (
         <>
-            <ContentComponent
-                items={itemsOfBreadcrumb}
-                renderChildren={() => (
-                    <CardComponent
-                        actionFunc={() => {
-                            setModalTitle('THÊM MENU');
-                            handleModal();
+            <ContentComponent items={itemsOfBreadcrumb} loading={false}>
+                <CardComponent
+                    actionFunc={() => {
+                        setModalMain({ open: true, title: 'THÊM BỘ PHẬN' });
+                    }}
+                    title="BỘ PHẬN"
+                >
+                    <TableComponent
+                        columns={columns}
+                        dataSource={menu}
+                        expandable={{
+                            expandedRowRender: record => (
+                                <TableComponent
+                                    bordered={true}
+                                    columns={columnsMenuDetail}
+                                    // Lấy dữ liệu từ expandedData theo id
+                                    dataSource={menuDetail[record.id]}
+                                    pagination={false}
+                                    summary={record => (
+                                        <Table.Summary.Row>
+                                            <Table.Summary.Cell colSpan={7}>
+                                                <Text strong>Tổng cộng</Text>
+                                            </Table.Summary.Cell>
+                                            <Table.Summary.Cell>
+                                                <Text strong ellipsis>
+                                                    {calculatorSummary(record)}
+                                                </Text>
+                                            </Table.Summary.Cell>
+                                        </Table.Summary.Row>
+                                    )}
+                                />
+                            ),
+                            // expandRowByClick: true,
+                            onExpand: (event, record) => {
+                                // Gọi hàm để lấy dữ liệu từ API cho hàng được mở rộng
+                                event === true && readMenuDetail(record.id);
+                                // Xóa dữ liệu trong khi đóng hàng mở rộng, tránh thất thoát memory
+                                event === false && delete menuDetail[record.id];
+                            },
                         }}
-                        renderChildren={() => (
-                            <TableComponent
-                                columns={columns}
-                                dataSource={dataSource}
-                                expandable={{
-                                    expandedRowRender: record => (
-                                        <TableComponent
-                                            bordered={true}
-                                            columns={columnsMenuDetail}
-                                            // Lấy dữ liệu từ expandedData theo id
-                                            dataSource={dataSourceMenuDetail[record.id]}
-                                            pagination={false}
-                                            summary={record => (
-                                                <Table.Summary.Row>
-                                                    <Table.Summary.Cell colSpan={7}>
-                                                        <Text strong>Tổng cộng</Text>
-                                                    </Table.Summary.Cell>
-                                                    <Table.Summary.Cell>
-                                                        <Text strong ellipsis>
-                                                            {calculatorSummary(record)}
-                                                        </Text>
-                                                    </Table.Summary.Cell>
-                                                </Table.Summary.Row>
-                                            )}
-                                        />
-                                    ),
-                                    // expandRowByClick: true,
-                                    onExpand: (event, record) => {
-                                        // Gọi hàm để lấy dữ liệu từ API cho hàng được mở rộng
-                                        event === true && handleGetDataMenuDetail(record.id);
-                                        // Xóa dữ liệu trong khi đóng hàng mở rộng, tránh thất thoát memory
-                                        event === false && delete dataSourceMenuDetail[record.id];
-                                    },
-                                }}
-                            />
-                        )}
-                        title="MENU"
                     />
-                )}
-            />
-            {/* Component hiển thị hộp thoại modal */}
+                </CardComponent>
+            </ContentComponent>
+
             <ModalComponent
-                // Xử lý sau khi đóng modal
                 afterClose={() => form.resetFields()}
-                // Xử lý khi nhấn nút Hủy
-                onCancel={handleModal}
-                // Xử lý khi nhấn nút OK
+                onCancel={() => setModalMain({ open: false })}
                 onOk={() => form.submit()}
-                // Trạng thái mở hoặc đóng của modal
-                open={modalOpen}
-                renderChildren={() => (
-                    <Form form={form} onFinish={onFinish} layout="vertical">
-                        <Form.Item name="id" hidden>
-                            <Input />
-                        </Form.Item>
+                open={modalMain.open}
+                title={modalMain.title}
+            >
+                <Form form={form} onFinish={onFinish} layout="vertical">
+                    <Form.Item name="id" hidden>
+                        <Input />
+                    </Form.Item>
 
-                        <Form.Item
-                            label="Ngày menu"
-                            name="menuDate"
-                            rules={[{ required: true, message: 'Vui lòng chọn ngày menu' }]}
-                        >
-                            <DatePicker allowClear style={{ width: '100%' }} />
-                        </Form.Item>
+                    <Form.Item
+                        label="Ngày menu"
+                        name="menuDate"
+                        rules={[{ required: true, message: 'Vui lòng chọn ngày menu' }]}
+                    >
+                        <DatePicker allowClear style={{ width: '100%' }} />
+                    </Form.Item>
 
-                        <Form.List name="menuDetail">
-                            {(fields, { add, remove }) => (
-                                <>
-                                    <Form.Item>
-                                        <Button
-                                            type="dashed"
-                                            block
-                                            icon={<PlusOutlined />}
-                                            onClick={() => add()}
-                                        >
-                                            Thêm trường dữ liệu
-                                        </Button>
-                                    </Form.Item>
-                                    {fields.map(({ key, name }) => (
-                                        <Row key={key} gutter={[8, 8]}>
-                                            <Col xs={14}>
-                                                <Form.Item
-                                                    label="Chọn món ăn"
-                                                    name={[name, 'dishId']}
-                                                    rules={[
-                                                        {
-                                                            required: true,
-                                                            message: 'Vui lòng chọn món ăn',
-                                                        },
-                                                    ]}
-                                                >
-                                                    <Select mode={'multiple'} allowClear>
-                                                        {dish.map(item => (
-                                                            <Select.Option
-                                                                key={item.id}
-                                                                value={item.id}
-                                                            >
-                                                                {item.name}
-                                                            </Select.Option>
-                                                        ))}
-                                                    </Select>
-                                                </Form.Item>
-                                            </Col>
-                                            <Col xs={8}>
-                                                <Form.Item
-                                                    label="Số người ăn"
-                                                    name={[name, 'servingSize']}
-                                                    rules={[
-                                                        {
-                                                            required: true,
-                                                            message: 'Vui lòng nhập số người ăn',
-                                                        },
-                                                    ]}
-                                                >
-                                                    <InputNumber
-                                                        controls={false}
-                                                        min={1}
-                                                        maxLength={10}
-                                                        suffix={<PersonFill />}
-                                                        parser={value => {
-                                                            if (value) {
-                                                                return String(parseInt(value, 10));
-                                                            }
-                                                            return value;
-                                                        }}
-                                                        style={{ width: '100%' }}
-                                                    />
-                                                </Form.Item>
-                                            </Col>
-                                            <CloseOutlined onClick={() => remove(name)} />
-                                        </Row>
-                                    ))}
-                                </>
-                            )}
-                        </Form.List>
-                    </Form>
-                )}
-                // Tiêu đề của modal
-                title={modalTitle}
+                    <Form.List name="menuDetail">
+                        {(fields, { add, remove }) => (
+                            <>
+                                <Form.Item>
+                                    <Button
+                                        type="dashed"
+                                        block
+                                        icon={<PlusOutlined />}
+                                        onClick={() => add()}
+                                    >
+                                        Thêm trường dữ liệu
+                                    </Button>
+                                </Form.Item>
+                                {fields.map(({ key, name }) => (
+                                    <Row key={key} gutter={[8, 8]}>
+                                        <Col xs={14}>
+                                            <Form.Item
+                                                label="Chọn món ăn"
+                                                name={[name, 'dishId']}
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: 'Vui lòng chọn món ăn',
+                                                    },
+                                                ]}
+                                            >
+                                                <Select mode={'multiple'} allowClear>
+                                                    {dish.map(item => (
+                                                        <Select.Option
+                                                            key={item.id}
+                                                            value={item.id}
+                                                        >
+                                                            {item.name}
+                                                        </Select.Option>
+                                                    ))}
+                                                </Select>
+                                            </Form.Item>
+                                        </Col>
+                                        <Col xs={8}>
+                                            <Form.Item
+                                                label="Số người ăn"
+                                                name={[name, 'servingSize']}
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: 'Vui lòng nhập số người ăn',
+                                                    },
+                                                ]}
+                                            >
+                                                <InputNumber
+                                                    controls={false}
+                                                    min={1}
+                                                    maxLength={10}
+                                                    suffix={<PersonFill />}
+                                                    parser={value => {
+                                                        if (value) {
+                                                            return String(parseInt(value, 10));
+                                                        }
+                                                        return value;
+                                                    }}
+                                                    style={{ width: '100%' }}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                        <CloseOutlined onClick={() => remove(name)} />
+                                    </Row>
+                                ))}
+                            </>
+                        )}
+                    </Form.List>
+                </Form>
+            </ModalComponent>
+
+            <ModalConfirmComponent
+                onCancel={() => setModalConfirm({ open: false })}
+                onOk={modalConfirm.onOk}
+                open={modalConfirm.open}
+                message={modalConfirm.message}
+            />
+
+            <ModalErrorComponent
+                onOk={() => setModalError({ open: false })}
+                open={modalError.open}
+                error={modalError.error}
+            />
+
+            <ModalSuccessComponent
+                onOk={() => setModalSuccess({ open: false })}
+                open={modalSuccess.open}
+                message={modalSuccess.message}
             />
         </>
     );

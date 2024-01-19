@@ -3,11 +3,18 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import {
     DepartmentPage,
+    DishPage,
+    DishTypePage,
     HomePage,
+    IngredientPage,
+    IngredientTypePage,
     LoginPage,
+    MenuPage,
     NotExistedPage,
     PrivatePage,
     RolePage,
+    StockInPage,
+    StockOutPage,
     SupplierPage,
     UnitPage,
     UserPage,
@@ -24,7 +31,7 @@ const App = () => {
                         colorBgLayout: '#fff',
                         controlHeight: 40,
                         fontSize: 20,
-                        fontFamily: "'Roboto', sans-serif",
+                        fontFamily: 'Roboto, sans-serif',
                     },
                 }}
             >
@@ -38,6 +45,76 @@ const App = () => {
                                 roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
                             >
                                 <HomePage />
+                            </PrivatePage>
+                        }
+                    />
+                    <Route
+                        path="/menu"
+                        element={
+                            <PrivatePage
+                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
+                            >
+                                <MenuPage />
+                            </PrivatePage>
+                        }
+                    />
+                    <Route
+                        path="/dish-list"
+                        element={
+                            <PrivatePage
+                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
+                            >
+                                <DishPage />
+                            </PrivatePage>
+                        }
+                    />
+                    <Route
+                        path="/dish-type"
+                        element={
+                            <PrivatePage
+                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
+                            >
+                                <DishTypePage />
+                            </PrivatePage>
+                        }
+                    />
+                    <Route
+                        path="/ingredient-list"
+                        element={
+                            <PrivatePage
+                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
+                            >
+                                <IngredientPage />
+                            </PrivatePage>
+                        }
+                    />
+                    <Route
+                        path="/ingredient-type"
+                        element={
+                            <PrivatePage
+                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
+                            >
+                                <IngredientTypePage />
+                            </PrivatePage>
+                        }
+                    />
+                    <Route
+                        path="/stock-in"
+                        element={
+                            <PrivatePage
+                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
+                            >
+                                <StockInPage />
+                            </PrivatePage>
+                        }
+                    />
+                    <Route
+                        path="/stock-out"
+                        element={
+                            <PrivatePage
+                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
+                            >
+                                <StockOutPage />
                             </PrivatePage>
                         }
                     />

@@ -1,30 +1,19 @@
-const db = require('../config/databaseConfig');
+const StockOut = require('../models/stockOutModel');
 
-const createStockOut = async => {};
+const stockOutService = {
+    createStockOut: async stockOutData => await new StockOut(stockOutData).save(),
 
-const readStockOut = async () => {
-    // Câu lệnh SQL để truy vấn dữ liệu từ bảng
-    const sql = `SELECT
-                    si.*,
-                    so.exportQuantity
-                FROM
-                    stock_in AS si
-                LEFT JOIN stock_out AS so
-                ON
-                    so.stockInId = si.id
-                ORDER BY
-                    si.id
-                DESC`;
+    readAllStockOut: async () => await StockOut.find(),
 
-    // Thực hiện truy vấn SQL và lưu kết quả vào biến 'results'
-    const [results] = await db.query(sql);
+    readStockOutById: async id => await StockOut.findById(id),
 
-    // Trả về kết quả của truy vấn SQL
-    return results;
+    updateStockOut: async (id, stockOutData) => {
+        stockOutData.updatedDate = new Date();
+
+        await StockOut.findByIdAndUpdate(id, stockOutData, { new: true });
+    },
+
+    deleteStockOut: async id => await StockOut.findByIdAndDelete(id),
 };
 
-const updateStockOut = async => {};
-
-const deleteStockOut = async => {};
-
-module.exports = { createStockOut, readStockOut, updateStockOut, deleteStockOut };
+module.exports = stockOutService;

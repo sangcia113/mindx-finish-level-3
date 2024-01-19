@@ -14,13 +14,7 @@ import {
     FormComponent,
     ModalComponent,
     TableComponent,
-} from '../../components/index';
-
-// Import hàm xử lý thông báo từ file API cụ thể
-import { handleNotification } from '../../handleAPI/handleNotification';
-
-// Import các hàm xử lý thao tác dữ liệu từ file API cụ thể
-import { deleteData, getData, getDataByType, postData, putData } from '../../handleAPI/api';
+} from '../../components';
 
 // Destructuring component Text từ Typography
 const { Text } = Typography;
@@ -81,46 +75,46 @@ const DishDetailPage = () => {
 
     const handleGetDataDish = async () => {
         // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const response = await getDataByType('dish');
-        setDish(response.data);
+        // const response = await getDataByType('dish');
+        // setDish(response.data);
     };
 
     const handleGetDataIngredient = async () => {
         // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const response = await getDataByType('ingredient');
-        setIngredient(response.data);
+        // const response = await getDataByType('ingredient');
+        // setIngredient(response.data);
     };
 
     const handleGetDataUnit = async () => {
         // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const response = await getDataByType('unit');
-        setUnit(response.data);
+        // const response = await getDataByType('unit');
+        // setUnit(response.data);
     };
 
     const handleGetData = async () => {
         // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-        const data = await getData(table);
-        setDataSource(data);
+        // const data = await getData(table);
+        // setDataSource(data);
     };
 
     const handleInsertData = async values => {
         // Thêm dữ liệu mới thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        const response = await postData(table, { ...values });
-        handleModal();
-        handleNotification(response, reRender);
+        // const response = await postData(table, { ...values });
+        // handleModal();
+        // handleNotification(response, reRender);
     };
 
     const handleUpdateData = async values => {
         // Cập nhật dữ liệu thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        const response = await putData(table, values.id, { ...values });
-        handleModal();
-        handleNotification(response, reRender);
+        // const response = await putData(table, values.id, { ...values });
+        // handleModal();
+        // handleNotification(response, reRender);
     };
 
     const handleDeleteData = async id => {
         // Xóa dữ liệu thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        const response = await deleteData(table, id);
-        handleNotification(response, reRender);
+        // const response = await deleteData(table, id);
+        // handleNotification(response, reRender);
     };
 
     const onFinish = values => {

@@ -11,13 +11,11 @@ const stockInController = {
         try {
             const stockInData = req.body;
 
-            const response = await createStockIn(stockInData);
+            await createStockIn(stockInData);
 
-            console.log(response);
-
-            res.status(200).json(response);
+            res.status(200).json({ error: 0, message: 'Thêm mới dữ liệu thành công!' });
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Thêm mới dữ liệu thất bại!' });
         }
     },
 
@@ -25,11 +23,9 @@ const stockInController = {
         try {
             const response = await readAllStockIn();
 
-            console.log(response);
-
             res.status(200).json(response);
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Đọc dữ liệu thất bại!' });
         }
     },
 
@@ -39,11 +35,9 @@ const stockInController = {
 
             const response = await readStockInById(id);
 
-            console.log(response);
-
             res.status(200).json(response);
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Đọc dữ liệu thất bại!' });
         }
     },
 
@@ -53,11 +47,11 @@ const stockInController = {
 
             const stockInData = req.body;
 
-            const response = await updateStockIn(id, stockInData);
+            await updateStockIn(id, stockInData);
 
-            console.log(response);
+            res.status(200).json({ error: 0, message: 'Cập nhật dữ liệu thành công!' });
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Cập nhật dữ liệu thất bại!' });
         }
     },
 
@@ -65,11 +59,11 @@ const stockInController = {
         try {
             const { id } = req.params;
 
-            const response = await deleteStockIn(id);
+            await deleteStockIn(id);
 
-            console.log(response);
+            res.status(200).json({ error: 0, message: 'Xóa dữ liệu thành công!' });
         } catch (error) {
-            console.log(error);
+            res.status(500).json({ error: -1000, message: 'Xóa dữ liệu thất bại!' });
         }
     },
 };

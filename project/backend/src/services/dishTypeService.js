@@ -1,27 +1,19 @@
 const DishType = require('../models/dishTypeModel');
 
 const dishTypeService = {
-    createDishType: async dishTypeData => {
-        const dishType = new DishType(dishTypeData);
+    createDishType: async dishTypeData => await new DishType(dishTypeData).save(),
 
-        return await dishType.save();
-    },
+    readAllDishType: async () => await DishType.find(),
 
-    readAllDishType: async () => {
-        return await DishType.find();
-    },
-
-    readDishTypeById: async id => {
-        return await DishType.findById(id);
-    },
+    readDishTypeById: async id => await DishType.findById(id),
 
     updateDishType: async (id, dishTypeData) => {
+        dishTypeData.updatedDate = new Date();
+
         return await DishType.findByIdAndUpdate(id, dishTypeData, { new: true });
     },
 
-    deleteDishType: async id => {
-        return await DishType.findByIdAndDelete(id);
-    },
+    deleteDishType: async id => await DishType.findByIdAndDelete(id),
 };
 
 module.exports = dishTypeService;

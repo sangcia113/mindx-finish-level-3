@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
 
 const dishSchema = new mongoose.Schema({
-    code: { type: String, required: true, unique: true },
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique: true },
     dishTypeId: { type: mongoose.Schema.Types.ObjectId, ref: 'DishType', required: true },
-    createdDate: { type: String, required: true },
-    updatedDate: { type: String, default: null },
+    createdDate: { type: Date, required: true, default: Date.now },
+    updatedDate: { type: Date, default: null },
 });
 
 const Dish = mongoose.model('Dish', dishSchema, 'dishs');

@@ -1,27 +1,19 @@
 const StockIn = require('../models/stockInModel');
 
 const stockInService = {
-    createStockIn: async stockInData => {
-        const stockIn = new StockIn(stockInData);
+    createStockIn: async stockInData => await new StockIn(stockInData).save(),
 
-        return await stockIn.save();
-    },
+    readAllStockIn: async () => await StockIn.find(),
 
-    readAllStockIn: async () => {
-        return await StockIn.find();
-    },
-
-    readStockInById: async id => {
-        return await StockIn.findById(id);
-    },
+    readStockInById: async id => await StockIn.findById(id),
 
     updateStockIn: async (id, stockInData) => {
-        return await StockIn.findByIdAndUpdate(id, stockInData, { new: true });
+        stockInData.updatedDate = new Date();
+
+        await StockIn.findByIdAndUpdate(id, stockInData, { new: true });
     },
 
-    deleteStockIn: async id => {
-        return await StockIn.findByIdAndDelete(id);
-    },
+    deleteStockIn: async id => await StockIn.findByIdAndDelete(id),
 };
 
 module.exports = stockInService;

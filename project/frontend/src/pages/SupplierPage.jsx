@@ -147,7 +147,7 @@ const SupplierPage = () => {
                             open: true,
                             message: (
                                 <Space direction="vertical" align="center">
-                                    Bạn có chắc muốn xóa bộ phận?
+                                    Bạn có chắc muốn xóa nhà cung cấp?
                                     <b>{record.name}</b>
                                     khỏi CSDL không?
                                     <Alert
@@ -164,15 +164,16 @@ const SupplierPage = () => {
                     }
                     actionEdit={() => {
                         form.setFieldsValue(record);
-                        setModalMain({ open: true, title: 'SỬA BỘ PHẬN' });
+                        setModalMain({ open: true, title: 'SỬA NHÀ CUNG CẤP' });
                     }}
                 />
             ),
         },
         {
-            title: 'Name',
+            title: 'Tên NCC',
             dataIndex: 'name',
             key: 'name',
+            ellipsis: true,
             render: record => (
                 <Text strong ellipsis>
                     {record}
@@ -181,20 +182,21 @@ const SupplierPage = () => {
             sorter: (a, b) => a.name.length - b.name.length,
         },
         {
-            title: 'Number Phone',
+            title: 'Số điện thoại',
             dataIndex: 'numberPhone',
             key: 'numberPhone',
             ellipsis: true,
             sorter: (a, b) => a.numberPhone - b.numberPhone,
         },
         {
-            title: 'Address',
+            title: 'Địa chỉ',
             dataIndex: 'address',
             key: 'address',
+            ellipsis: true,
             sorter: (a, b) => a.address.length - b.address.length,
         },
         {
-            title: 'Created Date',
+            title: 'Ngày tạo',
             dataIndex: 'createdDate',
             key: 'createdDate',
             ellipsis: true,
@@ -207,9 +209,9 @@ const SupplierPage = () => {
             <ContentComponent items={itemsOfBreadcrumb} loading={false}>
                 <CardComponent
                     actionFunc={() => {
-                        setModalMain({ open: true, title: 'THÊM BỘ PHẬN' });
+                        setModalMain({ open: true, title: 'THÊM NHÀ CUNG CẤP' });
                     }}
-                    title="BỘ PHẬN"
+                    title="NHÀ CUNG CẤP"
                 >
                     <TableComponent columns={columns} dataSource={supplier} />
                 </CardComponent>

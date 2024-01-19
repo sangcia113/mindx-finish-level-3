@@ -1,17 +1,16 @@
 const mongoose = require('mongoose');
 
 const ingredientSchema = new mongoose.Schema({
-    code: { type: String, required: true, unique: true },
     name: { type: String, required: true },
-    unit: { type: Number, required: true },
+    unitId: { type: mongoose.Schema.Types.ObjectId, ref: 'Unit', required: true },
     minStock: { type: Number, required: true },
     ingredientTypeId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'IngredientType',
         required: true,
     },
-    createdDate: { type: String, required: true },
-    updatedDate: { type: String, default: null },
+    createdDate: { type: Date, required: true, default: Date.now },
+    updatedDate: { type: Date, default: null },
 });
 
 const Ingredient = mongoose.model('Ingredient', ingredientSchema, 'ingredients');

@@ -1,129 +1,71 @@
-const menuService = require('../services/menuService');
+const {
+    createMenu,
+    readAllMenu,
+    readMenuById,
+    updateMenu,
+    deleteMenu,
+} = require('../services/menuService');
 
-// const calculatorMenuDetailHandler = async (req, res, next) => {
-//     // Lấy dữ liệu từ phần thân của yêu cầu
-//     const { menuDetail } = req.body;
+const menuController = {
+    createMenu: async (req, res) => {
+        try {
+            const menuData = req.body;
 
-//     // Kiểm tra xem liệu dữ liệu đã được cung cấp hay chưa
-//     if (!menuDetail) {
-//         // Nếu không, trả về lỗi 400 và thông báo lỗi
-//         return res.status(400).json({ error: 'Dữ liệu đầu vào không hợp lệ' });
-//     }
+            await createMenu(menuData);
 
-//     try {
-//         // // Lưu kết quả vào biến 'results'
-//         // const results = await menuService.calculatorMenuDetail(menuDetail);
+            res.status(200).json({ error: 0, message: 'Thêm mới dữ liệu thành công!' });
+        } catch (error) {
+            res.status(500).json({ error: -1000, message: 'Thêm mới dữ liệu thất bại!' });
+        }
+    },
 
-//         // // Gửi kết quả truy vấn dưới dạng JSON
-//         // res.json(results);
+    readAllMenu: async (req, res) => {
+        try {
+            const response = await readAllMenu();
 
-//         console.log(menuDetail);
-//         next();
-//     } catch (err) {
-//         // Ghi log lỗi
-//         console.error('Lỗi truy vấn cơ sở dữ liệu:', err);
+            res.status(200).json(response);
+        } catch (error) {
+            res.status(500).json({ error: -1000, message: 'Đọc dữ liệu thất bại!' });
+        }
+    },
 
-//         // Gửi thông báo lỗi dưới dạng JSON với mã trạng thái 500
-//         res.status(500).json({ error: `Lỗi truy vấn cơ sở dữ liệu: ${err.message}` });
-//     }
-// };
+    readMenuById: async (req, res) => {
+        try {
+            const { id } = req.params;
 
-const createMenuHandler = async (req, res) => {
-    // Lấy dữ liệu từ phần thân của yêu cầu
-    const { menuDate, menuDetail } = req.body;
+            const response = await readMenuById(id);
 
-    // Kiểm tra xem liệu dữ liệu đã được cung cấp hay chưa
-    if (!(menuDate || menuDetail)) {
-        // Nếu không, trả về lỗi 400 và thông báo lỗi
-        return res.status(400).json({ error: 'Dữ liệu đầu vào không hợp lệ' });
-    }
+            res.status(200).json(response);
+        } catch (error) {
+            res.status(500).json({ error: -1000, message: 'Đọc dữ liệu thất bại!' });
+        }
+    },
 
-    try {
-        // Thực hiện câu lệnh SQL
-        await menuService.createMenu(menuDate, menuDetail);
+    updateMenu: async (req, res) => {
+        try {
+            const { id } = req.params;
 
-        // Trả về thông báo thành công
-        res.json({ message: 'Thêm dữ liệu thành công!' });
-    } catch (err) {
-        // Ghi log lỗi
-        console.error('Lỗi truy vấn cơ sở dữ liệu:', err);
+            const menuData = req.body;
 
-        // Trả về lỗi 500 và thông báo lỗi
-        res.status(500).json({ error: 'Có lỗi xảy ra khi xử lý yêu cầu của bạn' });
-    }
+            await updateMenu(id, menuData);
+
+            res.status(200).json({ error: 0, message: 'Cập nhật dữ liệu thành công!' });
+        } catch (error) {
+            res.status(500).json({ error: -1000, message: 'Cập nhật dữ liệu thất bại!' });
+        }
+    },
+
+    deleteMenu: async (req, res) => {
+        try {
+            const { id } = req.params;
+
+            await deleteMenu(id);
+
+            res.status(200).json({ error: 0, message: 'Xóa dữ liệu thành công!' });
+        } catch (error) {
+            res.status(500).json({ error: -1000, message: 'Xóa dữ liệu thất bại!' });
+        }
+    },
 };
 
-const readMenuHandler = async (req, res) => {
-    try {
-        // Lưu kết quả vào biến 'results'
-        const results = await menuService.readMenu();
-
-        // Gửi kết quả truy vấn dưới dạng JSON
-        res.json(results);
-    } catch (err) {
-        // Nếu có lỗi xảy ra trong quá trình truy vấn, in lỗi ra console
-        console.error('Lỗi truy vấn cơ sở dữ liệu:', err);
-
-        // Gửi thông báo lỗi dưới dạng JSON với mã trạng thái 500
-        res.status(500).json({ error: `Lỗi truy vấn cơ sở dữ liệu: ${err.message}` });
-    }
-};
-
-const updateMenuHandler = async (req, res) => {
-    // Lấy id cần truy vấn từ params
-    const { id } = req.params;
-    // Lấy dữ liệu từ phần thân của yêu cầu
-    const { menuDate, menuDetail } = req.body;
-
-    // Kiểm tra xem liệu dữ liệu đã được cung cấp hay chưa
-    if (!(menuDate || menuDetail)) {
-        // Nếu không, trả về lỗi 400 và thông báo lỗi
-        return res.status(400).json({ error: 'Dữ liệu đầu vào không hợp lệ' });
-    }
-
-    try {
-        // Thực hiện câu lệnh SQL
-        await menuService.updateMenu(menuDate, menuDetail, id);
-
-        // Trả về thông báo thành công
-        res.json({ message: 'Cập nhật dữ liệu thành công!' });
-    } catch (err) {
-        // Ghi log lỗi
-        console.error('Lỗi truy vấn cơ sở dữ liệu:', err);
-
-        // Trả về lỗi 500 và thông báo lỗi
-        res.status(500).json({ error: 'Có lỗi xảy ra khi xử lý yêu cầu của bạn' });
-    }
-};
-
-const deleteMenuHandler = async (req, res) => {
-    // Lấy id cần truy vấn từ params
-    const { id } = req.params;
-
-    // Kiểm tra xem liệu dữ liệu đã được cung cấp hay chưa
-    if (!id) {
-        // Nếu không, trả về lỗi 400 và thông báo lỗi
-        return res.status(400).json({ error: 'Dữ liệu đầu vào không hợp lệ' });
-    }
-
-    try {
-        // Thực hiện câu lệnh SQL
-        await menuService.deleteMenu(id);
-
-        // Trả về thông báo thành công
-        res.json({ message: 'Xoá dữ liệu thành công!' });
-    } catch (err) {
-        // Ghi log lỗi
-        console.error('Lỗi truy vấn cơ sở dữ liệu:', err);
-
-        // Trả về lỗi 500 và thông báo lỗi
-        res.status(500).json({ error: 'Có lỗi xảy ra khi xử lý yêu cầu của bạn' });
-    }
-};
-
-module.exports = {
-    createMenuHandler,
-    readMenuHandler,
-    updateMenuHandler,
-    deleteMenuHandler,
-};
+module.exports = menuController;

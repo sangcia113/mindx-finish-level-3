@@ -1,17 +1,17 @@
 const {
-    createDishDetail,
-    readAllDishDetail,
-    readDishDetailByDishId,
-    updateDishDetail,
-    deleteDishDetail,
-} = require('../services/dishDetailService');
+    createStockOut,
+    readAllStockOut,
+    readStockOutById,
+    updateStockOut,
+    deleteStockOut,
+} = require('../services/stockOutService');
 
-const dishDetailController = {
-    createDishDetail: async (req, res) => {
+const stockOutController = {
+    createStockOut: async (req, res) => {
         try {
-            const dishDetailData = req.body;
+            const stockOutData = req.body;
 
-            await createDishDetail(dishDetailData);
+            await createStockOut(stockOutData);
 
             res.status(200).json({ error: 0, message: 'Thêm mới dữ liệu thành công!' });
         } catch (error) {
@@ -19,9 +19,9 @@ const dishDetailController = {
         }
     },
 
-    readAllDishDetail: async (req, res) => {
+    readAllStockOut: async (req, res) => {
         try {
-            const response = await readAllDishDetail();
+            const response = await readAllStockOut();
 
             res.status(200).json(response);
         } catch (error) {
@@ -29,11 +29,11 @@ const dishDetailController = {
         }
     },
 
-    readDishDetailByDishId: async (req, res) => {
+    readStockOutById: async (req, res) => {
         try {
             const { id } = req.params;
 
-            const response = await readDishDetailByDishId(id);
+            const response = await readStockOutById(id);
 
             res.status(200).json(response);
         } catch (error) {
@@ -41,13 +41,13 @@ const dishDetailController = {
         }
     },
 
-    updateDishDetail: async (req, res) => {
+    updateStockOut: async (req, res) => {
         try {
             const { id } = req.params;
 
-            const dishDetailData = req.body;
+            const stockOutData = req.body;
 
-            await updateDishDetail(id, dishDetailData);
+            await updateStockOut(id, stockOutData);
 
             res.status(200).json({ error: 0, message: 'Cập nhật dữ liệu thành công!' });
         } catch (error) {
@@ -55,11 +55,11 @@ const dishDetailController = {
         }
     },
 
-    deleteDishDetail: async (req, res) => {
+    deleteStockOut: async (req, res) => {
         try {
             const { id } = req.params;
 
-            await deleteDishDetail(id);
+            await deleteStockOut(id);
 
             res.status(200).json({ error: 0, message: 'Xóa dữ liệu thành công!' });
         } catch (error) {
@@ -68,4 +68,4 @@ const dishDetailController = {
     },
 };
 
-module.exports = dishDetailController;
+module.exports = stockOutController;

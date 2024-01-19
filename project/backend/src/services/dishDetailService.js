@@ -1,39 +1,19 @@
-const db = require('../configs/databaseConfig');
+const DishDetail = require('../models/dishDetailModel');
 
-const readDishDetail = async id => {
-    // Câu lệnh SQL để truy vấn dữ liệu từ bảng
-    const sql = `SELECT
-                    i.id,
-                    i.name AS ingredientName,
-                    it.name AS ingredientTypeName,
-                    u.name AS unitName,
-                    standard,
-                    price
-                FROM
-                    dish_detail AS dd
-                LEFT JOIN ingredient AS i
-                ON
-                    i.id = dd.ingredientId
-                LEFT JOIN ingredient_type AS it
-                ON
-                    it.id = i.ingredientTypeId
-                LEFT JOIN stock_in AS si
-                ON
-                    si.ingredientId = i.id
-                LEFT JOIN unit AS u
-                ON
-                    u.id = i.unitId
-                WHERE
-                    dishId = ?
-                ORDER BY
-                    i.id
-                DESC`;
+const dishDetailService = {
+    createDishDetail: async dishDetailData => await DishDetail.insertMany(dishDetailData),
 
-    // Thực hiện truy vấn SQL và lưu kết quả vào biến 'results'
-    const [results] = await db.query(sql, [id]);
+    readAllDishDetail: async () => await DishDetail.find(),
 
-    // Trả về kết quả của truy vấn SQL
-    return results;
+    readDishDetailByDishId: async dishId => await DishDetail.find({ dishId }),
+
+    updateDishDetail: async (id, dishDetailData) => {
+        dishDetailData.updatedDate = new Date();
+
+        return await DishDetail.findByIdAndUpdate(id, dishDetailData, { new: true });
+    },
+
+    deleteDishDetail: async id => await DishDetail.findByIdAndDelete(id),
 };
 
-module.exports = { readDishDetail };
+module.exports = dishDetailService;
