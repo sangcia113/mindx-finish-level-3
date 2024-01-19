@@ -13,7 +13,7 @@ const dishDetailService = {
         return await DishDetail.findByIdAndUpdate(id, dishDetailData, { new: true });
     },
 
-    deleteDishDetail: async id => await DishDetail.findByIdAndDelete(id),
+    deleteDishDetail: async dishId => await DishDetail.findOneAndDelete({ dishId }),
 };
 
 module.exports = dishDetailService;

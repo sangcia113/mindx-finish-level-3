@@ -129,6 +129,9 @@ const DishPage = () => {
 
     const [form] = Form.useForm();
 
+    const accessToken =
+        localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+
     useEffect(() => {
         console.log('Run useEffect');
 
@@ -141,7 +144,7 @@ const DishPage = () => {
     const readDishDetail = async id => {
         try {
             // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
-            const response = await createInstance().read(`/dish/detail/${id}`);
+            const response = await createInstance(accessToken).read(`/dish/detail/${id}`);
 
             // Lấy dữ liệu từ API, giữ nguyên dữ liệu cũ và cập nhật dữ liệu mới vào hoặc ghi đè theo id
             // setDishDetail(prevState => ({ ...prevState, [id]: response.data }));
@@ -158,7 +161,7 @@ const DishPage = () => {
 
     const readDishType = async () => {
         try {
-            const response = await createInstance().read('/dish/type');
+            const response = await createInstance(accessToken).read('/dish/type');
 
             setDishType(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -168,7 +171,7 @@ const DishPage = () => {
 
     const readIngredient = async () => {
         try {
-            const response = await createInstance().read('/ingredient/list');
+            const response = await createInstance(accessToken).read('/ingredient/list');
 
             setIngredient(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -178,7 +181,7 @@ const DishPage = () => {
 
     const readUnit = async () => {
         try {
-            const response = await createInstance().read('/unit');
+            const response = await createInstance(accessToken).read('/unit');
 
             setUnit(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -188,7 +191,7 @@ const DishPage = () => {
 
     const readDish = async () => {
         try {
-            const response = await createInstance().read('/dish/list');
+            const response = await createInstance(accessToken).read('/dish/list');
 
             setDish(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -198,7 +201,7 @@ const DishPage = () => {
 
     const createDish = async values => {
         try {
-            const response = await createInstance().create('/dish/list', values);
+            const response = await createInstance(accessToken).create('/dish/list', values);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 
@@ -218,9 +221,17 @@ const DishPage = () => {
     };
 
     const removeDish = async id => {
-        // Xóa dữ liệu thông qua API bất đồng bộ và xử lý thông báo sau đó cập nhật lại giao diện
-        // const response = await deleteData(table, id);
-        // handleNotification(response, handleGetData);
+        try {
+            const response = await createInstance(accessToken).remove(`/dish/list/${id}`);
+
+            setModalSuccess({ open: true, message: response?.data?.message });
+
+            setModalConfirm({ open: false });
+
+            readDish();
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
     };
 
     const onFinish = values => {
@@ -262,7 +273,7 @@ const DishPage = () => {
             ),
         },
         {
-            title: 'Name',
+            title: 'Tên món ăn',
             dataIndex: 'name',
             key: 'name',
             sorter: (a, b) => a.name.length - b.name.length,
@@ -273,7 +284,7 @@ const DishPage = () => {
             ),
         },
         {
-            title: 'Dish Type',
+            title: 'Loại món ăn',
             dataIndex: 'dishTypeId',
             key: 'dishTypeId',
             ellipsis: true,
@@ -281,7 +292,7 @@ const DishPage = () => {
             render: record => dishType.find(item => item._id === record)?.name,
         },
         {
-            title: 'Created Date',
+            title: 'Ngày tạo',
             dataIndex: 'createdDate',
             key: 'createdDate',
             ellipsis: true,

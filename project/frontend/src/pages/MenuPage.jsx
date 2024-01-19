@@ -97,6 +97,9 @@ const MenuPage = () => {
 
     const [form] = Form.useForm();
 
+    const accessToken =
+        localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+
     useEffect(() => {
         console.log('Run useEffect');
 
@@ -125,6 +128,13 @@ const MenuPage = () => {
     };
 
     const readMenuDetail = async id => {
+        try {
+            const response = await createInstance(accessToken).read('/detail');
+
+            setMenuDetail(response.data.map(item => ({ ...item, key: item._id })));
+        } catch (error) {
+            setModalError({ open: true, error });
+        }
         // console.log('Run readMenuDetail');
         // // Lấy dữ liệu từ API bất đồng bộ và cập nhật vào state
         // const data = await getDataById('menu-detail', id);
@@ -134,7 +144,7 @@ const MenuPage = () => {
 
     const readDish = async () => {
         try {
-            const response = await createInstance().read('/dish/list');
+            const response = await createInstance(accessToken).read('/dish/list');
 
             setDish(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -144,7 +154,7 @@ const MenuPage = () => {
 
     const readMenu = async () => {
         try {
-            const response = await createInstance().read('/list');
+            const response = await createInstance(accessToken).read('/list');
 
             setMenu(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -154,7 +164,7 @@ const MenuPage = () => {
 
     const createMenu = async values => {
         try {
-            const response = await createInstance().create('/list', values);
+            const response = await createInstance(accessToken).create('/list', values);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 
@@ -168,7 +178,10 @@ const MenuPage = () => {
 
     const updateMenu = async values => {
         try {
-            const response = await createInstance().update(`/list/${values._id}`, values);
+            const response = await createInstance(accessToken).update(
+                `/list/${values._id}`,
+                values
+            );
 
             setModalMain({ open: false });
 
@@ -182,7 +195,7 @@ const MenuPage = () => {
 
     const removeMenu = async id => {
         try {
-            const response = await createInstance().remove(`/list/${id}`);
+            const response = await createInstance(accessToken).remove(`/list/${id}`);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 
@@ -238,18 +251,12 @@ const MenuPage = () => {
             ),
         },
         {
-            title: '#',
-            dataIndex: 'id',
-            key: 'id',
-            sorter: (a, b) => a.id - b.id,
-        },
-        {
             title: 'Ngày menu',
             dataIndex: 'menuDate',
             key: 'menuDate',
             render: record => (
                 <Tag color="DodgerBlue" style={{ fontSize: 18 }}>
-                    {dayjs(record).format('YYYY-MM-DD')}
+                    {dayjs(record).format('DD-MM-YYYY')}
                 </Tag>
             ),
         },
@@ -258,6 +265,7 @@ const MenuPage = () => {
             dataIndex: 'createdDate',
             key: 'createdDate',
             ellipsis: true,
+            render: record => dayjs(record).format('DD/MM/YYYY HH:mm'),
         },
     ];
 
@@ -335,7 +343,7 @@ const MenuPage = () => {
                                     bordered={true}
                                     columns={columnsMenuDetail}
                                     // Lấy dữ liệu từ expandedData theo id
-                                    dataSource={menuDetail[record.id]}
+                                    dataSource={menuDetail[record._id]}
                                     pagination={false}
                                     summary={record => (
                                         <Table.Summary.Row>
@@ -354,9 +362,9 @@ const MenuPage = () => {
                             // expandRowByClick: true,
                             onExpand: (event, record) => {
                                 // Gọi hàm để lấy dữ liệu từ API cho hàng được mở rộng
-                                event === true && readMenuDetail(record.id);
+                                event === true && readMenuDetail(record._id);
                                 // Xóa dữ liệu trong khi đóng hàng mở rộng, tránh thất thoát memory
-                                event === false && delete menuDetail[record.id];
+                                event === false && delete menuDetail[record._id];
                             },
                         }}
                     />
@@ -371,7 +379,7 @@ const MenuPage = () => {
                 title={modalMain.title}
             >
                 <Form form={form} onFinish={onFinish} layout="vertical">
-                    <Form.Item name="id" hidden>
+                    <Form.Item name="_id" hidden>
                         <Input />
                     </Form.Item>
 
@@ -412,8 +420,8 @@ const MenuPage = () => {
                                                 <Select mode={'multiple'} allowClear>
                                                     {dish.map(item => (
                                                         <Select.Option
-                                                            key={item.id}
-                                                            value={item.id}
+                                                            key={item._id}
+                                                            value={item._id}
                                                         >
                                                             {item.name}
                                                         </Select.Option>

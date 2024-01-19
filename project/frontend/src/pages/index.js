@@ -1,5 +1,4 @@
 import DepartmentPage from './others/DepartmentPage';
-import DishDetailPage from './dish/DishDetailPage';
 import DishPage from './dish/DishPage';
 import DishTypePage from './dish/DishTypePage';
 import HomePage from './HomePage';
@@ -20,7 +19,6 @@ import WeeklyMenuPage from './WeeklyMenuPage';
 
 export {
     DepartmentPage,
-    DishDetailPage,
     DishPage,
     DishTypePage,
     HomePage,

@@ -75,13 +75,16 @@ const SupplierPage = () => {
 
     const [form] = Form.useForm();
 
+    const accessToken =
+        localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+
     useEffect(() => {
         readSupplier();
     }, []);
 
     const readSupplier = async () => {
         try {
-            const response = await createInstance().read('/supplier');
+            const response = await createInstance(accessToken).read('/supplier');
 
             setSupplier(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -91,7 +94,7 @@ const SupplierPage = () => {
 
     const createSupplier = async values => {
         try {
-            const response = await createInstance().create('/supplier', values);
+            const response = await createInstance(accessToken).create('/supplier', values);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 
@@ -105,7 +108,10 @@ const SupplierPage = () => {
 
     const updateSupplier = async values => {
         try {
-            const response = await createInstance().update(`/supplier/${values._id}`, values);
+            const response = await createInstance(accessToken).update(
+                `/supplier/${values._id}`,
+                values
+            );
 
             setModalMain({ open: false });
 
@@ -119,7 +125,7 @@ const SupplierPage = () => {
 
     const removeSupplier = async id => {
         try {
-            const response = await createInstance().remove(`/supplier/${id}`);
+            const response = await createInstance(accessToken).remove(`/supplier/${id}`);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 

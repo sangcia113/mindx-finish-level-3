@@ -61,13 +61,16 @@ const UnitPage = () => {
 
     const [form] = Form.useForm();
 
+    const accessToken =
+        localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+
     useEffect(() => {
         readUnit();
     }, []);
 
     const readUnit = async () => {
         try {
-            const response = await createInstance().read('/unit');
+            const response = await createInstance(accessToken).read('/unit');
 
             setUnit(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -77,7 +80,7 @@ const UnitPage = () => {
 
     const createUnit = async values => {
         try {
-            const response = await createInstance().create('/unit', values);
+            const response = await createInstance(accessToken).create('/unit', values);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 
@@ -91,7 +94,10 @@ const UnitPage = () => {
 
     const updateUnit = async values => {
         try {
-            const response = await createInstance().update(`/unit/${values._id}`, values);
+            const response = await createInstance(accessToken).update(
+                `/unit/${values._id}`,
+                values
+            );
 
             setModalMain({ open: false });
 
@@ -105,7 +111,7 @@ const UnitPage = () => {
 
     const removeUnit = async id => {
         try {
-            const response = await createInstance().remove(`/unit/${id}`);
+            const response = await createInstance(accessToken).remove(`/unit/${id}`);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 

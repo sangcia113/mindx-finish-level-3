@@ -3,7 +3,10 @@ const User = require('../models/userModel');
 const userService = {
     createUser: async userData => await new User(userData).save(),
 
-    readAllUser: async () => await User.find(),
+    readAllUser: async (page, pageSize) =>
+        await User.find()
+            .skip((page - 1) * pageSize)
+            .limit(Number(pageSize)),
 
     readUserById: async id => await User.findById(id),
 

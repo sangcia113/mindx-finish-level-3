@@ -61,13 +61,16 @@ const DishTypePage = () => {
 
     const [form] = Form.useForm();
 
+    const accessToken =
+        localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+
     useEffect(() => {
         readDishType();
     }, []);
 
     const readDishType = async () => {
         try {
-            const response = await createInstance().read('/dish/type');
+            const response = await createInstance(accessToken).read('/dish/type');
 
             setDishType(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -77,7 +80,7 @@ const DishTypePage = () => {
 
     const createDishType = async values => {
         try {
-            const response = await createInstance().create('/dish/type', values);
+            const response = await createInstance(accessToken).create('/dish/type', values);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 
@@ -91,7 +94,10 @@ const DishTypePage = () => {
 
     const updateDishType = async values => {
         try {
-            const response = await createInstance().update(`/dish/type/${values._id}`, values);
+            const response = await createInstance(accessToken).update(
+                `/dish/type/${values._id}`,
+                values
+            );
 
             setModalMain({ open: false });
 
@@ -105,7 +111,7 @@ const DishTypePage = () => {
 
     const removeDishType = async id => {
         try {
-            const response = await createInstance().remove(`/dish/type/${id}`);
+            const response = await createInstance(accessToken).remove(`/dish/type/${id}`);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 

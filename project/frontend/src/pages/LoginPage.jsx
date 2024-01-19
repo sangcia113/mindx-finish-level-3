@@ -34,7 +34,7 @@ const LoginPage = () => {
     const onFinish = async values => {
         try {
             const response = await createInstance().create(`/login`, values);
-            console.log(response.data);
+
             const { accessToken } = response.data;
 
             if (values.remember) {

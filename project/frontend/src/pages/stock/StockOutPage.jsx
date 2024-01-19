@@ -52,6 +52,9 @@ const StockOutPage = () => {
 
     const [form] = Form.useForm();
 
+    const accessToken =
+        localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+
     useEffect(() => {
         console.log('Run useEffect');
 
@@ -77,7 +80,7 @@ const StockOutPage = () => {
 
     const readIngredient = async () => {
         try {
-            const response = await createInstance().read('/ingredient/list');
+            const response = await createInstance(accessToken).read('/ingredient/list');
 
             setIngredient(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -87,7 +90,7 @@ const StockOutPage = () => {
 
     const readStockIn = async () => {
         try {
-            const response = await createInstance().read('/stock/in');
+            const response = await createInstance(accessToken).read('/stock/in');
 
             setStockIn(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -97,7 +100,7 @@ const StockOutPage = () => {
 
     const readUnit = async () => {
         try {
-            const response = await createInstance().read('/unit');
+            const response = await createInstance(accessToken).read('/unit');
 
             setUnit(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -107,7 +110,7 @@ const StockOutPage = () => {
 
     const readStockOut = async () => {
         try {
-            const response = await createInstance().read('/stock/out');
+            const response = await createInstance(accessToken).read('/stock/out');
 
             setStockOut(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -117,7 +120,7 @@ const StockOutPage = () => {
 
     const createStockOut = async values => {
         try {
-            const response = await createInstance().create('/stock/out', values);
+            const response = await createInstance(accessToken).create('/stock/out', values);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 
@@ -131,7 +134,10 @@ const StockOutPage = () => {
 
     const updateStockOut = async values => {
         try {
-            const response = await createInstance().update(`/stock/out/${values._id}`, values);
+            const response = await createInstance(accessToken).update(
+                `/stock/out/${values._id}`,
+                values
+            );
 
             setModalMain({ open: false });
 
@@ -145,7 +151,7 @@ const StockOutPage = () => {
 
     const removeStockOut = async id => {
         try {
-            const response = await createInstance().remove(`/stock/out/${id}`);
+            const response = await createInstance(accessToken).remove(`/stock/out/${id}`);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 

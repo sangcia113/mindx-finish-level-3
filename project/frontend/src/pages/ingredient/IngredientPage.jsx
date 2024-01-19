@@ -51,6 +51,9 @@ const IngredientPage = () => {
 
     const [form] = Form.useForm();
 
+    const accessToken =
+        localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+
     useEffect(() => {
         readIngredientType();
         readUnit();
@@ -59,7 +62,7 @@ const IngredientPage = () => {
 
     const readIngredientType = async () => {
         try {
-            const response = await createInstance().read('/ingredient/type');
+            const response = await createInstance(accessToken).read('/ingredient/type');
 
             setIngredientType(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -69,7 +72,7 @@ const IngredientPage = () => {
 
     const readUnit = async () => {
         try {
-            const response = await createInstance().read('/unit');
+            const response = await createInstance(accessToken).read('/unit');
 
             setUnit(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -79,7 +82,7 @@ const IngredientPage = () => {
 
     const readIngredient = async () => {
         try {
-            const response = await createInstance().read('/ingredient/list');
+            const response = await createInstance(accessToken).read('/ingredient/list');
 
             setIngredient(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -89,7 +92,7 @@ const IngredientPage = () => {
 
     const createIngredient = async values => {
         try {
-            const response = await createInstance().create('/ingredient/list', values);
+            const response = await createInstance(accessToken).create('/ingredient/list', values);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 
@@ -103,7 +106,7 @@ const IngredientPage = () => {
 
     const updateIngredient = async values => {
         try {
-            const response = await createInstance().update(
+            const response = await createInstance(accessToken).update(
                 `/ingredient/list/${values._id}`,
                 values
             );
@@ -120,7 +123,7 @@ const IngredientPage = () => {
 
     const removeIngredient = async id => {
         try {
-            const response = await createInstance().remove(`/ingredient/list/${id}`);
+            const response = await createInstance(accessToken).remove(`/ingredient/list/${id}`);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 

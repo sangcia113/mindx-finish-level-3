@@ -1,10 +1,6 @@
 const router = require('express').Router();
 
-// const dishRouter = require('./dishRouter');
-// const ingredientRouter = require('./ingredientRouter');
-// const menuDetailRouter = require('./menuDetailRouter');
-// const staffRouter = require('./staffRouter');
-// const unitRouter = require('./unitRouter');
+const { verifyToken } = require('../middlewares/authMiddleWare');
 
 const departmentRoute = require('./departmentRoute');
 const dishRoute = require('./dishRoute');
@@ -23,6 +19,8 @@ const userRoute = require('./userRoute');
 
 router.use('/menu/login', loginRoute);
 
+router.use(verifyToken);
+
 router.use('/menu/department', departmentRoute);
 router.use('/menu/dish/list', dishRoute);
 router.use('/menu/dish/detail', dishDetailRoute);
@@ -36,17 +34,5 @@ router.use('/menu/stock/out', stockOutRoute);
 router.use('/menu/supplier', supplierRoute);
 router.use('/menu/unit', unitRoute);
 router.use('/menu/user', userRoute);
-
-// router.use('/menu/dish', dishRouter);
-// router.use('/menu/dish-type', dishTypeRouter);
-// router.use('/menu/dish-detail', dishDetailRouter);
-// router.use('/menu/ingredient', ingredientRouter);
-// router.use('/menu/ingredient-type', ingredientTypeRouter);
-// router.use('/menu/menu', menuRouter);
-// router.use('/menu/menu-detail', menuDetailRouter);
-// router.use('/menu/staff', staffRouter);
-// router.use('/menu/stock-in', stockInRouter);
-// router.use('/menu/supplier', supplierRouter);
-// router.use('/menu/unit', unitRouter);
 
 module.exports = router;

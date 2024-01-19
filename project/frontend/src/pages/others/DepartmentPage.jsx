@@ -61,13 +61,16 @@ const DepartmentPage = () => {
 
     const [form] = Form.useForm();
 
+    const accessToken =
+        localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+
     useEffect(() => {
         readDepartment();
     }, []);
 
     const readDepartment = async () => {
         try {
-            const response = await createInstance().read('/department');
+            const response = await createInstance(accessToken).read('/department');
 
             setDepartment(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -77,7 +80,7 @@ const DepartmentPage = () => {
 
     const createDepartment = async values => {
         try {
-            const response = await createInstance().create('/department', values);
+            const response = await createInstance(accessToken).create('/department', values);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 
@@ -91,7 +94,10 @@ const DepartmentPage = () => {
 
     const updateDepartment = async values => {
         try {
-            const response = await createInstance().update(`/department/${values._id}`, values);
+            const response = await createInstance(accessToken).update(
+                `/department/${values._id}`,
+                values
+            );
 
             setModalMain({ open: false });
 
@@ -105,7 +111,7 @@ const DepartmentPage = () => {
 
     const removeDepartment = async id => {
         try {
-            const response = await createInstance().remove(`/department/${id}`);
+            const response = await createInstance(accessToken).remove(`/department/${id}`);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 

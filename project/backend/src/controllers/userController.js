@@ -24,8 +24,10 @@ const userController = {
     },
 
     readAllUser: async (req, res) => {
+        const { page, pageSize } = req.query;
+
         try {
-            const response = await readAllUser();
+            const response = await readAllUser(page, pageSize);
 
             res.status(200).json(response);
         } catch (error) {

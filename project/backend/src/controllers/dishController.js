@@ -6,7 +6,7 @@ const {
     deleteDish,
 } = require('../services/dishService');
 
-const { createDishDetail } = require('../services/dishDetailService');
+const { createDishDetail, deleteDishDetail } = require('../services/dishDetailService');
 
 const dishController = {
     createDish: async (req, res) => {
@@ -72,6 +72,8 @@ const dishController = {
             const { id } = req.params;
 
             await deleteDish(id);
+
+            await deleteDishDetail(id);
 
             res.status(200).json({ error: 0, message: 'Xóa dữ liệu thành công!' });
         } catch (error) {

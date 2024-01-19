@@ -61,13 +61,16 @@ const IngredientTypePage = () => {
 
     const [form] = Form.useForm();
 
+    const accessToken =
+        localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+
     useEffect(() => {
         readIngredientType();
     }, []);
 
     const readIngredientType = async () => {
         try {
-            const response = await createInstance().read('/ingredient/type');
+            const response = await createInstance(accessToken).read('/ingredient/type');
 
             setIngredientType(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -77,7 +80,7 @@ const IngredientTypePage = () => {
 
     const createIngredientType = async values => {
         try {
-            const response = await createInstance().create('/ingredient/type', values);
+            const response = await createInstance(accessToken).create('/ingredient/type', values);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 
@@ -91,7 +94,7 @@ const IngredientTypePage = () => {
 
     const updateIngredientType = async values => {
         try {
-            const response = await createInstance().update(
+            const response = await createInstance(accessToken).update(
                 `/ingredient/type/${values._id}`,
                 values
             );
@@ -108,7 +111,7 @@ const IngredientTypePage = () => {
 
     const removeIngredientType = async id => {
         try {
-            const response = await createInstance().remove(`/ingredient/type/${id}`);
+            const response = await createInstance(accessToken).remove(`/ingredient/type/${id}`);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 

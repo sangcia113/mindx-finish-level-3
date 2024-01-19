@@ -24,6 +24,12 @@ const itemsOfBreadcrumb = [{ title: '' }, { title: 'Others' }, { title: 'User' }
 const UserPage = () => {
     console.log('Run DishTypePage....');
 
+    const [pagination, setPagination] = useState({
+        current: 1,
+        pageSize: 10,
+        total: 0,
+    });
+
     const [user, setUser] = useState([]);
 
     const [role, setRole] = useState([]);
@@ -53,15 +59,21 @@ const UserPage = () => {
 
     const [form] = Form.useForm();
 
+    const accessToken =
+        localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+
     useEffect(() => {
         readUser();
+    }, [pagination.current, pagination.pageSize]);
+
+    useEffect(() => {
         readRole();
         readDepartment();
     }, []);
 
     const readRole = async () => {
         try {
-            const response = await createInstance().read('/role');
+            const response = await createInstance(accessToken).read('/role');
 
             setRole(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -71,7 +83,7 @@ const UserPage = () => {
 
     const readDepartment = async () => {
         try {
-            const response = await createInstance().read('/department');
+            const response = await createInstance(accessToken).read('/department');
 
             setDepartment(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -81,9 +93,15 @@ const UserPage = () => {
 
     const readUser = async () => {
         try {
-            const response = await createInstance().read('/user');
+            const response = await createInstance(accessToken).read(
+                `/user?page=${pagination.current}&pageSize=${pagination.pageSize}`
+            );
+
+            console.log(response.data);
 
             setUser(response.data.map(item => ({ ...item, key: item._id })));
+
+            setPagination({ ...pagination, total: response.data.length });
         } catch (error) {
             setModalError({ open: true, error });
         }
@@ -91,7 +109,7 @@ const UserPage = () => {
 
     const createUser = async values => {
         try {
-            const response = await createInstance().create('/user', values);
+            const response = await createInstance(accessToken).create('/user', values);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 
@@ -106,7 +124,10 @@ const UserPage = () => {
 
     const updateUser = async values => {
         try {
-            const response = await createInstance().update(`/user/${values._id}`, values);
+            const response = await createInstance(accessToken).update(
+                `/user/${values._id}`,
+                values
+            );
 
             setModalMain({ open: false });
 
@@ -120,7 +141,7 @@ const UserPage = () => {
 
     const removeUser = async id => {
         try {
-            const response = await createInstance().remove(`/user/${id}`);
+            const response = await createInstance(accessToken).remove(`/user/${id}`);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 
@@ -367,7 +388,12 @@ const UserPage = () => {
                     }}
                     title="NHÂN VIÊN"
                 >
-                    <TableComponent columns={columns} dataSource={user} />
+                    <TableComponent
+                        columns={columns}
+                        dataSource={user}
+                        onChange={pagination => setPagination(pagination)}
+                        pagination={pagination}
+                    />
                 </CardComponent>
             </ContentComponent>
 

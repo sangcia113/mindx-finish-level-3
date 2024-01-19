@@ -61,13 +61,16 @@ const RolePage = () => {
 
     const [form] = Form.useForm();
 
+    const accessToken =
+        localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+
     useEffect(() => {
         readRole();
     }, []);
 
     const readRole = async () => {
         try {
-            const response = await createInstance().read('/role');
+            const response = await createInstance(accessToken).read('/role');
 
             setRole(response.data.map(item => ({ ...item, key: item._id })));
         } catch (error) {
@@ -77,7 +80,7 @@ const RolePage = () => {
 
     const createRole = async values => {
         try {
-            const response = await createInstance().create('/role', values);
+            const response = await createInstance(accessToken).create('/role', values);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 
@@ -91,7 +94,10 @@ const RolePage = () => {
 
     const updateRole = async values => {
         try {
-            const response = await createInstance().update(`/role/${values._id}`, values);
+            const response = await createInstance(accessToken).update(
+                `/role/${values._id}`,
+                values
+            );
 
             setModalMain({ open: false });
 
@@ -105,7 +111,7 @@ const RolePage = () => {
 
     const removeRole = async id => {
         try {
-            const response = await createInstance().remove(`/role/${id}`);
+            const response = await createInstance(accessToken).remove(`/role/${id}`);
 
             setModalSuccess({ open: true, message: response?.data?.message });
 
