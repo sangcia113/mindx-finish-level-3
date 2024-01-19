@@ -24,11 +24,7 @@ const itemsOfBreadcrumb = [{ title: '' }, { title: 'Others' }, { title: 'User' }
 const UserPage = () => {
     console.log('Run DishTypePage....');
 
-    const [pagination, setPagination] = useState({
-        current: 1,
-        pageSize: 10,
-        total: 0,
-    });
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
 
     const [user, setUser] = useState([]);
 
@@ -64,9 +60,6 @@ const UserPage = () => {
 
     useEffect(() => {
         readUser();
-    }, [pagination.current, pagination.pageSize]);
-
-    useEffect(() => {
         readRole();
         readDepartment();
     }, []);
@@ -91,17 +84,20 @@ const UserPage = () => {
         }
     };
 
-    const readUser = async () => {
+    const readUser = async (page = 1, pageSize = 10) => {
         try {
             const response = await createInstance(accessToken).read(
-                `/user?page=${pagination.current}&pageSize=${pagination.pageSize}`
+                `/user?page=${page}&pageSize=${pageSize}`
             );
 
-            console.log(response.data);
+            setUser(response.data.data.map(item => ({ ...item, key: item._id })));
 
-            setUser(response.data.map(item => ({ ...item, key: item._id })));
-
-            setPagination({ ...pagination, total: response.data.length });
+            setPagination({
+                ...pagination,
+                current: response.data.page,
+                pageSize: response.data.pageSize,
+                total: response.data.total,
+            });
         } catch (error) {
             setModalError({ open: true, error });
         }
@@ -391,7 +387,9 @@ const UserPage = () => {
                     <TableComponent
                         columns={columns}
                         dataSource={user}
-                        onChange={pagination => setPagination(pagination)}
+                        onChange={(pagination, filters, sorter) => {
+                            readUser(pagination.current, pagination.pageSize);
+                        }}
                         pagination={pagination}
                     />
                 </CardComponent>

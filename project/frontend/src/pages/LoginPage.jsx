@@ -28,7 +28,7 @@ const LoginPage = () => {
     const [form] = Form.useForm();
 
     useEffect(() => {
-        if (checkToken()) navigate('/');
+        if (checkToken()) navigate('/weekly-menu');
     }, []);
 
     const onFinish = async values => {
@@ -43,7 +43,7 @@ const LoginPage = () => {
                 sessionStorage.setItem('accessToken', accessToken);
             }
 
-            navigate('/');
+            navigate('/weekly-menu');
         } catch (error) {
             console.log(error);
             setModalError({ error, open: true });

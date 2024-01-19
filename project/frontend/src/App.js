@@ -12,12 +12,12 @@ import {
     MenuPage,
     NotExistedPage,
     PrivatePage,
-    RolePage,
     StockInPage,
     StockOutPage,
     SupplierPage,
     UnitPage,
     UserPage,
+    WeeklyMenuPage,
 } from './pages/index';
 
 const App = () => {
@@ -39,11 +39,26 @@ const App = () => {
                     <Route path="*" element={<NotExistedPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route
-                        path="/"
+                        path="/weekly-menu"
                         element={
                             <PrivatePage
-                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
+                                roles={[
+                                    '65a93be12c65719fb6cf87b9',
+                                    '65a93c3b3faf844ac5d41b2d',
+                                    '65a93c463faf844ac5d41b30',
+                                    '65a93c513faf844ac5d41b33',
+                                    '65a93c5a3faf844ac5d41b36',
+                                    '65a93c623faf844ac5d41b39',
+                                ]}
                             >
+                                <WeeklyMenuPage />
+                            </PrivatePage>
+                        }
+                    />
+                    <Route
+                        path="/"
+                        element={
+                            <PrivatePage roles={['65a93be12c65719fb6cf87b9']}>
                                 <HomePage />
                             </PrivatePage>
                         }
@@ -51,9 +66,7 @@ const App = () => {
                     <Route
                         path="/menu"
                         element={
-                            <PrivatePage
-                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
-                            >
+                            <PrivatePage roles={['65a93be12c65719fb6cf87b9']}>
                                 <MenuPage />
                             </PrivatePage>
                         }
@@ -61,9 +74,7 @@ const App = () => {
                     <Route
                         path="/dish-list"
                         element={
-                            <PrivatePage
-                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
-                            >
+                            <PrivatePage roles={['65a93be12c65719fb6cf87b9']}>
                                 <DishPage />
                             </PrivatePage>
                         }
@@ -71,9 +82,7 @@ const App = () => {
                     <Route
                         path="/dish-type"
                         element={
-                            <PrivatePage
-                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
-                            >
+                            <PrivatePage roles={['65a93be12c65719fb6cf87b9']}>
                                 <DishTypePage />
                             </PrivatePage>
                         }
@@ -81,9 +90,7 @@ const App = () => {
                     <Route
                         path="/ingredient-list"
                         element={
-                            <PrivatePage
-                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
-                            >
+                            <PrivatePage roles={['65a93be12c65719fb6cf87b9']}>
                                 <IngredientPage />
                             </PrivatePage>
                         }
@@ -91,9 +98,7 @@ const App = () => {
                     <Route
                         path="/ingredient-type"
                         element={
-                            <PrivatePage
-                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
-                            >
+                            <PrivatePage roles={['65a93be12c65719fb6cf87b9']}>
                                 <IngredientTypePage />
                             </PrivatePage>
                         }
@@ -101,9 +106,7 @@ const App = () => {
                     <Route
                         path="/stock-in"
                         element={
-                            <PrivatePage
-                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
-                            >
+                            <PrivatePage roles={['65a93be12c65719fb6cf87b9']}>
                                 <StockInPage />
                             </PrivatePage>
                         }
@@ -111,9 +114,7 @@ const App = () => {
                     <Route
                         path="/stock-out"
                         element={
-                            <PrivatePage
-                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
-                            >
+                            <PrivatePage roles={['65a93be12c65719fb6cf87b9']}>
                                 <StockOutPage />
                             </PrivatePage>
                         }
@@ -121,9 +122,7 @@ const App = () => {
                     <Route
                         path="/supplier"
                         element={
-                            <PrivatePage
-                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
-                            >
+                            <PrivatePage roles={['65a93be12c65719fb6cf87b9']}>
                                 <SupplierPage />
                             </PrivatePage>
                         }
@@ -131,9 +130,7 @@ const App = () => {
                     <Route
                         path="/others-unit"
                         element={
-                            <PrivatePage
-                                roles={['65a93be12c65719fb6cf87b9', '65a93c463faf844ac5d41b30']}
-                            >
+                            <PrivatePage roles={['65a93be12c65719fb6cf87b9']}>
                                 <UnitPage />
                             </PrivatePage>
                         }
@@ -151,14 +148,6 @@ const App = () => {
                         element={
                             <PrivatePage roles={['65a93be12c65719fb6cf87b9']}>
                                 <DepartmentPage />
-                            </PrivatePage>
-                        }
-                    />
-                    <Route
-                        path="/others-role"
-                        element={
-                            <PrivatePage roles={['65a93be12c65719fb6cf87b9']}>
-                                <RolePage />{' '}
                             </PrivatePage>
                         }
                     />

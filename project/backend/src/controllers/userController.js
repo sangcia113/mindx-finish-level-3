@@ -24,7 +24,9 @@ const userController = {
     },
 
     readAllUser: async (req, res) => {
-        const { page, pageSize } = req.query;
+        const page = parseInt(req.query.page) || 1;
+
+        const pageSize = parseInt(req.query.pageSize) || 10;
 
         try {
             const response = await readAllUser(page, pageSize);

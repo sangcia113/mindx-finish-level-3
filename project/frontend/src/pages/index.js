@@ -9,7 +9,6 @@ import NotExistedPage from './NotExistedPage';
 import IngredientPage from './ingredient/IngredientPage';
 import IngredientTypePage from './ingredient/IngredientTypePage';
 import PrivatePage from './PrivatePage';
-import RolePage from './others/RolePage';
 import UserPage from './others/UserPage';
 import StockInPage from './stock/StockInPage';
 import StockOutPage from './stock/StockOutPage';
@@ -29,7 +28,6 @@ export {
     IngredientPage,
     IngredientTypePage,
     PrivatePage,
-    RolePage,
     UserPage,
     StockInPage,
     StockOutPage,

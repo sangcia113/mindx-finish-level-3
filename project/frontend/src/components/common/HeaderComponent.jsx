@@ -110,11 +110,6 @@ const items = [
                 label: 'Bộ phận',
                 icon: <Cast color="DodgerBlue" />,
             },
-            {
-                key: 'others-role',
-                label: 'Chức vụ',
-                icon: <Bezier color="DodgerBlue" />,
-            },
         ],
     },
 ];
@@ -136,11 +131,11 @@ const HeaderComponent = ({ name }) => {
                     style={{ cursor: 'pointer', fontSize: 36 }}
                     onClick={() => setOpenDraw(prevOpen => !prevOpen)}
                 />
-                {/* <Link to="/">
+                <Link to="/">
                     <Text style={{ color: 'DodgerBlue', fontSize: 36, fontWeight: 700 }}>
                         MindX
                     </Text>
-                </Link> */}
+                </Link>
                 <Space size={'large'}>
                     <Badge count={4} overflowCount={10} size={'small'} color="OrangeRed">
                         <ChatDots style={{ fontSize: 24 }} />
